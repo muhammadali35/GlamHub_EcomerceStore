@@ -30,6 +30,7 @@ const NewArrivel = () => {
           </p>
         </div>
 
+
         {/* Slider with Custom Navigation */}
         <div className="relative">
           <Swiper
@@ -65,8 +66,9 @@ const NewArrivel = () => {
           <button className="custom-next absolute right-0 top-1/2 -translate-y-1/2 bg-brand-gold text-white p-3 rounded-full shadow-lg hover:bg-black transition hidden md:flex">
             <ChevronRight className="w-6 h-6" />
           </button>
-        </div>
+
       </div>
+        </div>
     </section>
   );
 };

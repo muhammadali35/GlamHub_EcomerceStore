@@ -34,25 +34,23 @@ function Navbar() {
 
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center space-x-8 font-medium relative">
-          <Link to="/" className="hover:text-brand-gold hover:bg-green-50 px-4 py-2">
+          <Link to="/" className="hover:text-white rounded-full hover:bg-black px-6 py-2">
             HOME
           </Link>
 
           {/* Shop with Dropdown */}
           <div className="relative group">
-
             {/* Dropdown */}
             <div className="absolute left-0 top-full hidden group-hover:block bg-white shadow-md rounded-md mt-2 w-40">
-
               <Link
                 to="/shop/mobile-accessories"
-                className="block px-4 py-2 hover:bg-green-50 hover:text-brand-gold"
+                className="block px-4 py-2 hover:bg-black hover:text-white rounded-full"
               >
                 Mobile Accessories
               </Link>
               <Link
                 to="/shop/kitchen-accessories"
-                className="block px-4 py-2 hover:bg-green-50 hover:text-brand-gold"
+                className="block px-4 py-2 hover:bg-black hover:text-white rounded-full"
               >
                 Kitchen Accessories
               </Link>
@@ -61,19 +59,19 @@ function Navbar() {
 
           <Link
             to="/shop/cosmetics"
-            className="block px-4 py-2 hover:bg-green-50 hover:text-brand-gold"
+            className="block px-4 py-2 hover:bg-black hover:text-white rounded-full"
           >
             Cosmetics
           </Link>
           <Link
             to="/shop/mobile-accessories"
-            className="block px-4 py-2 hover:bg-green-50 hover:text-brand-gold"
+            className="block px-4 py-2 hover:bg-black hover:text-white rounded-full"
           >
             Mobile Accessories
           </Link>
           <Link
             to="/shop/kitchen-accessories"
-            className="block px-4 py-2 hover:bg-green-50 hover:text-brand-gold"
+            className="block px-4 py-2 hover:bg-black hover:text-white rounded-full"
           >
             Kitchen Accessories
           </Link>
@@ -123,7 +121,7 @@ function Navbar() {
         <div className="md:hidden bg-white shadow-md border-t">
           <Link
             to="/"
-            className="block px-6 py-3 hover:bg-green-50 hover:text-brand-gold"
+            className="block px-6 py-3 hover:bg-black hover:text-white "
             onClick={() => setIsMobileMenuOpen(false)}
           >
             HOME
@@ -131,7 +129,7 @@ function Navbar() {
 
           <Link
             to="/shop/mobile-accessories"
-            className="block px-6 py-3 hover:bg-green-50 hover:text-brand-gold"
+            className="block px-6 py-3 hover:bg-black hover:text-white "
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Mobile Accessories
@@ -139,7 +137,7 @@ function Navbar() {
 
           <Link
             to="/shop/kitchen-accessories"
-            className="block px-6 py-3 hover:bg-green-50 hover:text-brand-gold"
+            className="block px-6 py-3 hover:bg-black hover:text-white "
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Kitchen Accessories
@@ -147,14 +145,13 @@ function Navbar() {
 
           <Link
             to="/shop/cosmetics"
-            className="block px-6 py-3 hover:bg-green-50 hover:text-brand-gold"
+            className="block px-6 py-3 hover:bg-black hover:text-white "
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Cosmetics
           </Link>
 
-         
-          </div>
+        </div>
       )}
     </nav>
   );
