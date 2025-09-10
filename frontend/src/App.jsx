@@ -7,10 +7,12 @@ import { ShopProvider } from ".//context/ShopContext";
 import Cart from "./Pages/CartSection/Cart";
 import Favorites from "./Pages/Favorites/Favorites";
 import Checkout from "./Pages/CartSection/Checkout";
+import ScrollToTop from "./Components/ScrollToTop";
 function App() {
   return (
     <>
     <ShopProvider>
+      <ScrollToTop />
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />

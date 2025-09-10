@@ -20,7 +20,7 @@ export default function ProductCard({ product, currentCategory }) {
         <img
           src={product.img}
           alt={product.name}
-          className="w-full h-72 object-cover  transform group-hover:scale-110 transition duration-500"
+          className="w-full h-80 object-cover  transform group-hover:scale-110 transition duration-500"
         />
 
         {/* Dark overlay on hover */}
