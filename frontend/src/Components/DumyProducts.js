@@ -2,16 +2,17 @@ import cosmatic from "./../assets/cosmat1.jpg";
 import cosp1 from "./../assets/cosp2.png";
 import mobile from "./../assets/mobile1.jpg";
 import Kitchen from "./../assets/Kitchen1.jpg";
+import perfum from "./../assets/perfum.webp";
 export const productsData = {
   cosmetics: [
-    { id: 1, name: "Lipstick", price: 12, img: cosp1 },
-    { id: 2, name: "Face Cream", price: 18, img: cosp1 },
-    { id: 3, name: "Eyeliner", price: 10, img: cosp1 },
-    { id: 4, name: "Eyeliner", price: 10, img: cosp1 },
-    { id: 5, name: "Eyeliner", price: 10, img: cosp1 },
-    { id: 6, name: "Eyeliner", price: 10, img: cosp1 },
-    { id: 7, name: "Eyeliner", price: 10, img: cosp1 },
-    { id: 8, name: "Eyeliner", price: 10, img: cosp1 },
+    { id: 1, name: "Lipstick", price: 12, img:perfum },
+    { id: 2, name: "Face Cream", price: 18, img:perfum },
+    { id: 3, name: "Eyeliner", price: 10, img:perfum },
+    { id: 4, name: "Eyeliner", price: 10, img:perfum },
+    { id: 5, name: "Eyeliner", price: 10, img:perfum },
+    { id: 6, name: "Eyeliner", price: 10, img:perfum },
+    { id: 7, name: "Eyeliner", price: 10, img:perfum },
+    { id: 8, name: "Eyeliner", price: 10, img:perfum },
   ],
   "mobile-accessories": [
     { id: 9, name: "Phone Cover", price: 8, img: mobile },
