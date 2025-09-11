@@ -8,6 +8,7 @@ import Cart from "./Pages/CartSection/Cart";
 import Favorites from "./Pages/Favorites/Favorites";
 import Checkout from "./Pages/CartSection/Checkout";
 import ScrollToTop from "./Components/ScrollToTop";
+import Footer from "./Components/Layout/Footer";
 function App() {
   return (
     <>
@@ -24,6 +25,7 @@ function App() {
         <Route path="/favorites" element={<Favorites />} />
         <Route path="/checkout" element={<Checkout />} />
       </Routes>
+       <Footer />
     </ShopProvider>
      
     </>

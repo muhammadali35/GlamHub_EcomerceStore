@@ -3,6 +3,7 @@ import Hero from './Hero'
 import Categories from './Categories'
 import NewArrivel from './NewArrivel'
 import HotSelling from './HotSelling'
+import Features from './Features'
 
 const Home = () => {
   return (
@@ -11,6 +12,7 @@ const Home = () => {
    <Categories/>
     <HotSelling/>
    <NewArrivel/>
+   <Features/>
   
     </>
   )
