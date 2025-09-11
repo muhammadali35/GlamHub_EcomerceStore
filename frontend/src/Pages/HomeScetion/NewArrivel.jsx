@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
@@ -10,6 +10,19 @@ import ProductCard from "../../Components/Cards/ProductCard";
 import { productsData } from "../../Components/DumyProducts";
 
 const NewArrivel = () => {
+  const swiperRef = useRef(null);
+
+  // Custom navigation handlers
+  const handlePrev = () => {
+    if (swiperRef.current) {
+      swiperRef.current.slidePrev();
+    }
+  };
+  const handleNext = () => {
+    if (swiperRef.current) {
+      swiperRef.current.slideNext();
+    }
+  };
   // Extract only new arrival products from all categories
   const newArrivalProducts = [
     ...productsData.cosmetics.filter((p) => p.newarrival),
@@ -37,16 +50,13 @@ const NewArrivel = () => {
             modules={[Navigation, Pagination, Autoplay]}
             spaceBetween={20}
             slidesPerView={1}
-            pagination={{ clickable: true }}
             autoplay={{ delay: 3000 }}
-            navigation={{
-              prevEl: ".custom-prev",
-              nextEl: ".custom-next",
-            }}
+            onSwiper={(swiper) => (swiperRef.current = swiper)}
             breakpoints={{
-              640: { slidesPerView: 1 },
-              768: { slidesPerView: 2 },
+              320: { slidesPerView: 1 },
+              640: { slidesPerView: 2 },
               1024: { slidesPerView: 3 },
+              1280: { slidesPerView: 4 },
             }}
           >
             {newArrivalProducts.map((product) => (
@@ -59,13 +69,24 @@ const NewArrivel = () => {
             ))}
           </Swiper>
 
-          {/* Custom Navigation Buttons */}
-          <button className="custom-prev absolute left-0 top-1/2 -translate-y-1/2 bg-brand-gold text-white p-3 rounded-full shadow-lg hover:bg-black transition hidden md:flex">
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-          <button className="custom-next absolute right-0 top-1/2 -translate-y-1/2 bg-brand-gold text-white p-3 rounded-full shadow-lg hover:bg-black transition hidden md:flex">
-            <ChevronRight className="w-6 h-6" />
-          </button>
+          {newArrivalProducts.length > 4 && (
+            <>
+              <button
+                type="button"
+                onClick={handlePrev}
+                className="absolute top-44 -left-6 z-10 w-14 h-14 flex items-center justify-center bg-white text-black text-3xl rounded-lg shadow-md cursor-pointer hover:bg-yellow-500 hover:text-white transition"
+              >
+                ‹
+              </button>
+              <button
+                type="button"
+                onClick={handleNext}
+                className="absolute top-44 -right-6 z-10 w-14 h-14 flex items-center justify-center bg-white text-black text-3xl rounded-lg shadow-md cursor-pointer hover:bg-yellow-500 hover:text-white transition"
+              >
+                ›
+              </button>
+            </>
+          )}
 
       </div>
         </div>

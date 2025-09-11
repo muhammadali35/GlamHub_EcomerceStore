@@ -1,5 +1,5 @@
-import cosmatic from "./../assets/cosmat1.jpg";
-import cosp1 from "./../assets/cosp2.png";
+// import cosmatic from "./../assets/cosmat1.jpg";
+// import cosp1 from "./../assets/cosp2.png";
 import mobile from "./../assets/mobile1.jpg";
 import Kitchen from "./../assets/Kitchen1.jpg";
 import perfum from "./../assets/perfum.webp";
@@ -32,7 +32,7 @@ export const productsData = {
     { id: 21, name: "Cooking Pot", price: 40, img: Kitchen },
     { id: 22, name: "Cooking Pot", price: 40, img: Kitchen,newarrival:true },
     { id: 23, name: "Cooking Pot", price: 40, img: Kitchen },
-    { id: 24, name: "Cooking Pot", price: 40, img: Kitchen },
-    { id: 25, name: "Cooking Pot", price: 40, img: Kitchen },
+    { id: 24, name: "Cooking Pot", price: 40, img: Kitchen ,hotsale:true },
+    { id: 25, name: "Cooking Po", price: 60, img: Kitchen,  hotsale:true},
   ],
 };
