@@ -1,18 +1,36 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
 const ShopContext = createContext();
 
 export function ShopProvider({ children }) {
-  const [cart, setCart] = useState([]);
-  const [favorites, setFavorites] = useState([]);
+  const [cart, setCart] = useState(() => {
+    const savedCart = localStorage.getItem("cart");
+    return savedCart ? JSON.parse(savedCart) : [];
+  });
+
+  const [favorites, setFavorites] = useState(() => {
+    const savedFavs = localStorage.getItem("favorites");
+    return savedFavs ? JSON.parse(savedFavs) : [];
+  });
+
   const [quantities, setQuantities] = useState({});
+
+  // 🛒 Save cart in localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }, [cart]);
+
+  // ❤️ Save favorites in localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("favorites", JSON.stringify(favorites));
+  }, [favorites]);
 
   // 🛒 Add to cart
   const addToCart = (product) => {
     setCart((prevCart) => {
       const exists = prevCart.find((item) => item.id === product.id);
       if (exists) {
-        return prevCart; // already added
+        return prevCart;
       } else {
         setQuantities((prev) => ({ ...prev, [product.id]: 1 }));
         return [...prevCart, product];
@@ -43,15 +61,13 @@ export function ShopProvider({ children }) {
     });
   };
 
-  // ❤️ Toggle favorites (add/remove)
+  // ❤️ Toggle favorites
   const toggleFavorite = (product) => {
     setFavorites((prev) => {
       const exists = prev.find((item) => item.id === product.id);
       if (exists) {
-        // remove if already in favorites
         return prev.filter((item) => item.id !== product.id);
       } else {
-        // add if not in favorites
         return [...prev, product];
       }
     });

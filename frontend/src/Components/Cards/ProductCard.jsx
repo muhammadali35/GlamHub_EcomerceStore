@@ -14,18 +14,21 @@ export default function ProductCard({ product, currentCategory }) {
   }, [favorites, product.id]);
 
   return (
-   <Link to={`/product/${currentCategory}/${product.id}`}>
-    <div className="bg-white rounded-2xl  overflow-hidden  group relative hover:shadow-2xl transition">
+   <>
+    <div className="bg-white rounded-2xl overflow-hidden group relative hover:shadow-2xl transition">
       {/* Image Section */}
-      <div className="relative overflow-hidden bg-gray-100 ">
-        <img
-          src={product.img}
-          alt={product.name}
-          className="w-full h-80 object-cover  transform group-hover:scale-110 transition duration-500"
-        />
+      <div className="relative overflow-hidden bg-gray-100">
+        {/* ✅ Wrap only image with Link */}
+        <Link to={`/product/${currentCategory}/${product.id}`}>
+          <img
+            src={product.img}
+            alt={product.name}
+            className="w-full h-80 object-cover transform group-hover:scale-110 transition duration-500"
+          />
+        </Link>
 
-        {/* Dark overlay on hover */}
-        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition duration-500"></div>
+        {/* Dark overlay on hover (pointer-events-none so it won't block clicks) */}
+        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition duration-500 pointer-events-none"></div>
 
         {/* Favorite Icon */}
         <button
@@ -56,15 +59,14 @@ export default function ProductCard({ product, currentCategory }) {
       </div>
 
       {/* Content Section */}
-      <div className="p-6 text-center bg-[#fafafa] ">
+      <div className="p-6 text-center bg-[#fafafa]">
         <h3 className="text-lg font-semibold text-gray-800 group-hover:text-brand-gold transition">
           {product.name}
         </h3>
-          <p className="text-xl font-normal text-brand-gold mt-3">Rs: {product.price}.00</p>
+        <p className="text-xl font-normal text-brand-gold mt-3">Rs: {product.price}.00</p>
         <p className="text-gray-500 text-sm mt-1">Premium {product.name}</p>
-      
       </div>
     </div>
-    </Link>
+   </>
   );
 }
