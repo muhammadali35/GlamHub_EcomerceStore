@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // Import banner images
 import cosmaticb from "./../../assets/cosmat.jpg";
@@ -21,29 +21,53 @@ export default function Shop() {
   const { category } = useParams();
   const currentCategory = category || "cosmetics";
 
-  // State for price slider
-  const [minPrice, setMinPrice] = useState(10);  // Default min
-  const [maxPrice, setMaxPrice] = useState(500); // Default max
-
-  // Toggle for price filter collapse
-  const [isPriceOpen, setIsPriceOpen] = useState(true);
-
-  // Sorting state
+  // States
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+  const [stockFilter, setStockFilter] = useState("all");
   const [sort, setSort] = useState("default");
-
-  // Load More state (only for unfiltered view)
   const [visibleProducts, setVisibleProducts] = useState(9);
+  const [loading, setLoading] = useState(false);
 
-  // Get products for current category
+  // Collapse toggle states
+  const [isPriceOpen, setIsPriceOpen] = useState(true);
+  const [isStockOpen, setIsStockOpen] = useState(true);
+
+  // Get products
   let products = [...(productsData[currentCategory] || [])];
 
-  // Check if any filter is active
-  const hasActiveFilter = minPrice !== 10 || maxPrice !== 500;
+  // Stock counts
+  const inStockCount = products.filter((p) => p.inStock).length;
+  const outOfStockCount = products.filter((p) => !p.inStock).length;
 
-  // Apply price filtering using slider values
-  products = products.filter(p => p.price >= minPrice && p.price <= maxPrice);
+  // Check filters active
+  const hasActiveFilter =
+    minPrice !== "" || maxPrice !== "" || stockFilter !== "all";
 
-  // Apply sorting
+  // Simulate loading
+  useEffect(() => {
+    setLoading(true);
+    const timer = setTimeout(() => setLoading(false), 1200); // ⏳ delay 1.2s
+    return () => clearTimeout(timer);
+  }, [minPrice, maxPrice, stockFilter, sort]);
+
+  // Apply price filter
+  if (minPrice !== "" || maxPrice !== "") {
+    products = products.filter(
+      (p) =>
+        (minPrice === "" || p.price >= minPrice) &&
+        (maxPrice === "" || p.price <= maxPrice)
+    );
+  }
+
+  // Stock filter
+  if (stockFilter === "in-stock") {
+    products = products.filter((p) => p.inStock);
+  } else if (stockFilter === "out-of-stock") {
+    products = products.filter((p) => !p.inStock);
+  }
+
+  // Sorting
   if (sort === "low-to-high") {
     products.sort((a, b) => a.price - b.price);
   } else if (sort === "high-to-low") {
@@ -54,55 +78,60 @@ export default function Shop() {
     products.sort((a, b) => b.name.localeCompare(a.name));
   }
 
-  // Show "Load More" only when no filter is applied
-  const showLoadMore = !hasActiveFilter;
-
-  // Load More handler
+  // Load More
   const handleLoadMore = () => {
-    setVisibleProducts(prev => prev + 9);
+    setVisibleProducts((prev) => prev + 9);
   };
 
-  // Reset filter
+  // Reset filters
   const resetFilter = () => {
-    setMinPrice(10);
-    setMaxPrice(500);
+    setMinPrice("");
+    setMaxPrice("");
+    setStockFilter("all");
+    setSort("default");
   };
 
-  // Get banner image
-  const bannerImage = bannerImages[currentCategory] || "/images/shop-banner.jpg";
+  // Banner image
+  const bannerImage =
+    bannerImages[currentCategory] || "/images/shop-banner.jpg";
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Top Banner */}
+      {/* Banner */}
       <div
         className="h-60 flex items-center justify-center text-white text-4xl font-bold bg-center bg-cover relative"
-        style={{
-          backgroundImage: `url(${bannerImage})`,
-        }}
+        style={{ backgroundImage: `url(${bannerImage})` }}
       >
         <div className="absolute inset-0 bg-black/50"></div>
         <h1 className="relative z-10 uppercase">
-          {currentCategory.replace("-", " ").replace(/\b\w/g, l => l.toUpperCase())}
+          {currentCategory
+            .replace("-", " ")
+            .replace(/\b\w/g, (l) => l.toUpperCase())}
         </h1>
       </div>
 
       {/* Main Content */}
       <div className="container mx-auto px-6 py-8 flex flex-col md:flex-row gap-8">
-        {/* Left: Filters Sidebar */}
+        {/* Sidebar Filters */}
         <div className="md:w-64 space-y-4">
-          {/* Filter by Price */}
+          {/* Price Filter */}
           <div className="border border-gray-200 rounded-lg overflow-hidden shadow-sm">
             <button
               onClick={() => setIsPriceOpen(!isPriceOpen)}
               className="w-full px-4 py-3 flex items-center justify-between text-left font-medium text-gray-700 hover:bg-gray-50 transition"
             >
-              <span className="font-medium">Filter by Prices</span>
-              <span className="text-sm font-bold">{isPriceOpen ? '−' : '+'}</span>
+              <span className="font-medium">Filter by Price</span>
+              <span className="text-sm font-bold">
+                {isPriceOpen ? "−" : "+"}
+              </span>
             </button>
+
             {isPriceOpen && (
               <div className="p-4 pt-2 space-y-3 border-t border-gray-100">
                 <div className="flex items-center justify-between text-xs text-gray-600 mb-2">
-                  <span>Price Pk{minPrice} — Pk{maxPrice}</span>
+                  <span>
+                    Price Rs.{minPrice || 0} — Rs.{maxPrice || "∞"}
+                  </span>
                   <button
                     onClick={resetFilter}
                     className="text-green-600 hover:text-green-800 text-xs"
@@ -110,46 +139,83 @@ export default function Shop() {
                     Reset
                   </button>
                 </div>
-                <div className="relative">
-                  {/* Single Range Input */}
+
+                <div className="flex items-center gap-3">
                   <input
-                    type="range"
-                    min="10"
-                    max="500"
+                    type="number"
+                    placeholder="Min"
                     value={minPrice}
-                    onChange={(e) => setMinPrice(parseInt(e.target.value))}
-                    className="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer"
+                    onChange={(e) =>
+                      setMinPrice(e.target.value ? parseInt(e.target.value) : "")
+                    }
+                    className="w-1/2 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
                   />
-                  {/* Min Dot */}
-                  <div
-                    className="absolute top-0 left-0 w-2 h-2 bg-blue-500 rounded-full transform -translate-x-1 -translate-y-1"
-                    style={{ left: `${((minPrice - 10) / 490) * 100}%` }}
-                  ></div>
-                </div>
-                <div className="relative">
-                  {/* Second Range Input (for max) */}
                   <input
-                    type="range"
-                    min="10"
-                    max="500"
+                    type="number"
+                    placeholder="Max"
                     value={maxPrice}
-                    onChange={(e) => setMaxPrice(parseInt(e.target.value))}
-                    className="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer"
+                    onChange={(e) =>
+                      setMaxPrice(e.target.value ? parseInt(e.target.value) : "")
+                    }
+                    className="w-1/2 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
                   />
-                  {/* Max Dot */}
-                  <div
-                    className="absolute top-0 left-0 w-2 h-2 bg-blue-500 rounded-full transform -translate-x-1 -translate-y-1"
-                    style={{ left: `${((maxPrice - 10) / 490) * 100}%` }}
-                  ></div>
                 </div>
+              </div>
+            )}
+          </div>
+
+          {/* Stock Filter */}
+          <div className="border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+            <button
+              onClick={() => setIsStockOpen(!isStockOpen)}
+              className="w-full px-4 py-3 flex items-center justify-between text-left font-medium text-gray-700 hover:bg-gray-50 transition"
+            >
+              <span className="font-medium">Filter by Stock</span>
+              <span className="text-sm font-bold">
+                {isStockOpen ? "−" : "+"}
+              </span>
+            </button>
+
+            {isStockOpen && (
+              <div className="p-4 pt-2 space-y-3 border-t border-gray-100">
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input
+                    type="radio"
+                    name="stock"
+                    checked={stockFilter === "all"}
+                    onChange={() => setStockFilter("all")}
+                    className="text-green-600 focus:ring-green-500"
+                  />
+                  All ({productsData[currentCategory]?.length || 0})
+                </label>
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input
+                    type="radio"
+                    name="stock"
+                    checked={stockFilter === "in-stock"}
+                    onChange={() => setStockFilter("in-stock")}
+                    className="text-green-600 focus:ring-green-500"
+                  />
+                  In Stock ({inStockCount})
+                </label>
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input
+                    type="radio"
+                    name="stock"
+                    checked={stockFilter === "out-of-stock"}
+                    onChange={() => setStockFilter("out-of-stock")}
+                    className="text-green-600 focus:ring-green-500"
+                  />
+                  Out of Stock ({outOfStockCount})
+                </label>
               </div>
             )}
           </div>
         </div>
 
-        {/* Right: Products Grid */}
+        {/* Products Section */}
         <div className="flex-1">
-          {/* Sort Dropdown */}
+          {/* Sort */}
           <div className="mb-6 flex justify-end">
             <select
               value={sort}
@@ -164,33 +230,57 @@ export default function Shop() {
             </select>
           </div>
 
-          {/* Products Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {products.length > 0 ? (
-              products.slice(0, hasActiveFilter ? undefined : visibleProducts).map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  currentCategory={currentCategory}
-                />
-              ))
-            ) : (
-              <p className="col-span-full text-gray-600 text-center py-10">
-                No products found matching your criteria.
-              </p>
-            )}
-          </div>
-
-          {/* Load More Button: Only if no filter is applied */}
-          {showLoadMore && (
-            <div className="mt-10 flex justify-center">
-              <button
-                onClick={handleLoadMore}
-                className="px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 font-medium text-sm"
-              >
-                LOAD MORE
-              </button>
+          {/* Products or Loading */}
+          {loading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              {Array.from({ length: 9 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="border rounded-lg shadow-sm p-4 bg-white overflow-hidden"
+                >
+                  {/* Image Skeleton */}
+                  <div className="w-full h-40 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 animate-pulse rounded-md mb-4"></div>
+                  {/* Title Skeleton */}
+                  <div className="h-4 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 animate-pulse rounded w-3/4 mb-2"></div>
+                  {/* Price Skeleton */}
+                  <div className="h-4 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 animate-pulse rounded w-1/2 mb-4"></div>
+                  {/* Button Skeleton */}
+                  <div className="h-10 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 animate-pulse rounded"></div>
+                </div>
+              ))}
             </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                {products.length > 0 ? (
+                  products
+                    .slice(0, hasActiveFilter ? undefined : visibleProducts)
+                    .map((product) => (
+                      <ProductCard
+                        key={product.id}
+                        product={product}
+                        currentCategory={currentCategory}
+                      />
+                    ))
+                ) : (
+                  <p className="col-span-full text-gray-600 text-center py-10">
+                    No products found matching your criteria.
+                  </p>
+                )}
+              </div>
+
+              {/* Load More */}
+              {!hasActiveFilter && products.length > visibleProducts && (
+                <div className="mt-10 flex justify-center">
+                  <button
+                    onClick={handleLoadMore}
+                    className="px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 font-medium text-sm"
+                  >
+                    LOAD MORE
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
