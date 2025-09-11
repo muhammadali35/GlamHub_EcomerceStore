@@ -14,6 +14,7 @@ export default function ProductCard({ product, currentCategory }) {
   }, [favorites, product.id]);
 
   return (
+   <Link to={`/product/${currentCategory}/${product.id}`}>
     <div className="bg-white rounded-2xl  overflow-hidden  group relative hover:shadow-2xl transition">
       {/* Image Section */}
       <div className="relative overflow-hidden bg-gray-100 ">
@@ -64,5 +65,6 @@ export default function ProductCard({ product, currentCategory }) {
       
       </div>
     </div>
+    </Link>
   );
 }

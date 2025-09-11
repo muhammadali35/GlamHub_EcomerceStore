@@ -43,7 +43,9 @@ const HotSelling = () => {
                   Rs: {firstProducts.price}.00
                 </p>
 
-                <Link to={`/product/${firstProducts.category}/${firstProducts.id}`}>
+                <Link
+                  to={`/product/${firstProducts.category}/${firstProducts.id}`}
+                >
                   <button className="px-6 md:px-8 py-2 bg-black text-white rounded-full font-medium shadow hover:bg-gray-800 transition">
                     SHOP NOW
                   </button>
@@ -66,9 +68,10 @@ const HotSelling = () => {
             {sliecedProducts1.map((product) => (
               <div
                 key={product.id}
-                className="w-full sm:w-[250px] md:w-[280px]   h-auto cursor-pointer mx-auto"
+            
+                className="w-full sm:w-[250px] md:w-[280px] h-auto cursor-pointer mx-auto"
               >
-                <ProductCard product={product} />
+                <ProductCard product={product}   currentCategory={product.category}/>
               </div>
             ))}
           </div>
@@ -83,7 +86,10 @@ const HotSelling = () => {
                 key={product.id}
                 className="w-full sm:w-[250px] md:w-[280px] h-auto cursor-pointer mx-auto"
               >
-                <ProductCard product={product} />
+                <ProductCard
+                  product={product}
+                  currentCategory={product.category}
+                />
               </div>
             ))}
           </div>
@@ -99,9 +105,14 @@ const HotSelling = () => {
                 <p className="text-base md:text-lg text-gray-700">
                   Rs: {secondProducts.price}.00
                 </p>
-                <button className="mt-6 px-6 md:px-8 py-2 bg-black text-white rounded-full font-medium hover:bg-gray-800 transition">
-                  SHOP NOW
-                </button>
+
+                <Link
+                  to={`/product/${secondProducts.category}/${secondProducts.id}`}
+                >
+                  <button className="mt-6 px-6 md:px-8 py-2 bg-black text-white rounded-full font-medium hover:bg-gray-800 transition">
+                    SHOP NOW
+                  </button>
+                </Link>
               </div>
 
               {/* Right Side Image */}
