@@ -64,7 +64,7 @@ const HotSelling = () => {
           )}
 
           {/* Smaller Product Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full md:w-1/2 ">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full md:w-1/2 h-full">
             {sliecedProducts1.map((product) => (
               <div
                 key={product.id}
