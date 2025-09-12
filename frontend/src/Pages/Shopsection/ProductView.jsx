@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { productsData } from "../../Components/DumyProducts";
 
@@ -19,6 +19,9 @@ import ProductCard from "../../Components/Cards/ProductCard";
 
 export default function ProductView() {
   const { category, id } = useParams();
+
+  // Loading state for product details
+  const [loading, setLoading] = useState(true);
 
   const categoryProducts = productsData[category] || [];
   const product = categoryProducts.find((p) => p.id.toString() === id.toString());
@@ -129,6 +132,66 @@ export default function ProductView() {
   };
 
   // ============ END REVIEW SECTION ============
+
+  useEffect(() => {
+    setLoading(true);
+    // Simulate loading delay (e.g., API call)
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1200); // 1.2 seconds
+
+    return () => clearTimeout(timer);
+  }, [category, id]);
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-6 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          {/* Left - Image Skeleton */}
+          <div className="relative">
+            <div className="w-full h-[500px] bg-gray-200 animate-pulse rounded-xl mb-4"></div>
+            <div className="flex space-x-2 mt-4">
+              {[1,2,3,4].map((i) => (
+                <div key={i} className="w-24 h-24 bg-gray-200 animate-pulse rounded-md"></div>
+              ))}
+            </div>
+          </div>
+          {/* Right - Info Skeleton */}
+          <div className="flex flex-col space-y-5">
+            <div className="h-6 w-1/2 bg-gray-200 animate-pulse rounded mb-2"></div>
+            <div className="h-10 w-3/4 bg-gray-200 animate-pulse rounded mb-2"></div>
+            <div className="h-4 w-full bg-gray-200 animate-pulse rounded mb-2"></div>
+            <div className="h-8 w-1/3 bg-gray-200 animate-pulse rounded mb-2"></div>
+            <div className="h-4 w-1/2 bg-gray-200 animate-pulse rounded mb-2"></div>
+            <div className="flex space-x-3 mt-6">
+              <div className="h-12 w-32 bg-gray-200 animate-pulse rounded"></div>
+              <div className="h-12 w-32 bg-gray-200 animate-pulse rounded"></div>
+            </div>
+            <div className="h-8 w-1/2 bg-gray-200 animate-pulse rounded mt-4"></div>
+            <div className="h-8 w-1/2 bg-gray-200 animate-pulse rounded mt-4"></div>
+          </div>
+        </div>
+        {/* Reviews Skeleton */}
+        <div className="mt-20">
+          <div className="h-8 w-1/4 bg-gray-200 animate-pulse rounded mb-6"></div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {[1,2,3,4].map((i) => (
+              <div key={i} className="bg-gray-200 animate-pulse h-32 rounded-lg"></div>
+            ))}
+          </div>
+        </div>
+        {/* Related Products Skeleton */}
+        <div className="mt-20">
+          <div className="h-8 w-1/4 bg-gray-200 animate-pulse rounded mb-6"></div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {[1,2,3,4].map((i) => (
+              <div key={i} className="bg-gray-200 animate-pulse h-48 rounded-lg"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!product) {
     return <p className="text-center py-20">Product not found</p>;
