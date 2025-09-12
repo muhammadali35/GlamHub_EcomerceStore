@@ -142,10 +142,7 @@ const TestimonialSection = () => {
                 {item.product}
               </h4>
 
-              {/* Star Rating */}
-              <div className="flex justify-center mb-3">
-                <StarRating rating={item.rating} />
-              </div>
+           
 
               {/* Review Text */}
               <p className="text-gray-700 text-center text-sm md:text-base leading-relaxed mb-4 line-clamp-3">
@@ -157,7 +154,7 @@ const TestimonialSection = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-medium text-gray-800">{item.name}</p>
-                    <p className="text-xs text-gray-500">{item.date}</p>
+                 
                   </div>
                   {item.verified && (
                     <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full font-medium">
