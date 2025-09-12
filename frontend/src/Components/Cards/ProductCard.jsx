@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai"; // Heart icons
 
 export default function ProductCard({ product, currentCategory }) {
-  const { addToCart, toggleFavorite, favorites } = useShop(); 
+  const { addToCart, toggleFavorite, favorites } = useShop();
   const [isFav, setIsFav] = useState(false);
 
   // Check if product is already favorite (on mount and when favorites update)
@@ -14,11 +14,10 @@ export default function ProductCard({ product, currentCategory }) {
   }, [favorites, product.id]);
 
   return (
-   <>
     <div className="bg-white rounded-2xl overflow-hidden group relative hover:shadow-2xl transition">
       {/* Image Section */}
       <div className="relative overflow-hidden bg-gray-100">
-        {/* ✅ Wrap only image with Link */}
+        {/* Wrap only image with Link */}
         <Link to={`/product/${currentCategory}/${product.id}`}>
           <img
             src={product.img}
@@ -32,7 +31,7 @@ export default function ProductCard({ product, currentCategory }) {
 
         {/* Favorite Icon */}
         <button
-          onClick={() => toggleFavorite(product)} // toggle from context
+          onClick={() => toggleFavorite(product)}
           className="absolute top-3 right-3 p-2 rounded-full shadow bg-white transition"
         >
           {isFav ? (
@@ -49,13 +48,19 @@ export default function ProductCard({ product, currentCategory }) {
           </button>
         </Link>
 
-        {/* Add to Cart (bottom slide up on hover) */}
-        <button
-          onClick={() => addToCart(product)}
-          className="absolute bottom-[-60px] left-1/2 transform -translate-x-1/2 bg-black text-white font-medium px-4 py-2 rounded-full w-40 shadow opacity-0 group-hover:bottom-5 group-hover:opacity-100 transition-all duration-500 hover:bg-white hover:text-black"
-        >
-          Add to Cart
-        </button>
+        {/* Add to Cart or Out of Stock Message */}
+        {product.inStock ? (
+          <button
+            onClick={() => addToCart(product)}
+            className="absolute bottom-[-60px] left-1/2 transform -translate-x-1/2 bg-black text-white font-medium px-4 py-2 rounded-full w-40 shadow opacity-0 group-hover:bottom-5 group-hover:opacity-100 transition-all duration-500 hover:bg-white hover:text-black"
+          >
+            Add to Cart
+          </button>
+        ) : (
+          <div className="absolute bottom-[-60px] left-1/2 transform -translate-x-1/2 bg-red-500 text-white text-center font-medium px-4 py-2 rounded-full w-40 shadow opacity-0 group-hover:bottom-5 group-hover:opacity-100 transition-all duration-500">
+            Out of Stock
+          </div>
+        )}
       </div>
 
       {/* Content Section */}
@@ -67,6 +72,5 @@ export default function ProductCard({ product, currentCategory }) {
         <p className="text-gray-500 text-sm mt-1">Premium {product.name}</p>
       </div>
     </div>
-   </>
   );
 }
