@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 const FrontBanner = ({ title, bgImage }) => {
   return (
     <div
-      className="relative h-60 flex items-center"
+      className="relative h-60 flex items-center bg-black font-mono"
       style={{
         backgroundImage: `url(${bgImage})`,
         backgroundSize: "cover",

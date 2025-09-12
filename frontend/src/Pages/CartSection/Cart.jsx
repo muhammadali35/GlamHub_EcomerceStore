@@ -31,14 +31,14 @@ const Cart = () => {
 
   return (
     <>
-      <FrontBanner title="Shopping Cart" bgImage={logo} />
+      <FrontBanner title="Shopping Cart" />
 
       {cart.length === 0 ? (
         <h2 className="text-center text-gray-600 mt-10 text-xl mb-9">
           Your Cart is Empty 🛒
         </h2>
       ) : (
-        <div className="container mx-auto px-6 py-12">
+        <div className="container mx-auto px-6 py-12 font-mono">
           <h2 className="text-3xl font-bold mb-8 text-center text-brand-gold">
             Your Shopping Cart
           </h2>

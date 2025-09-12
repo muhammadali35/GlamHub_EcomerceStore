@@ -14,8 +14,8 @@ const Favorites = () => {
 
   return (
   <>
-  <FrontBanner title="Favorites"  bgImage={logo}/>
-    <div className="container mx-auto px-6 py-12">
+  <FrontBanner title="Favorites"  />
+    <div className="container mx-auto px-6 py-12 font-mono">
       <h2 className="text-3xl font-bold mb-8 text-center text-brand-gold">
         Your Favorites
       </h2>

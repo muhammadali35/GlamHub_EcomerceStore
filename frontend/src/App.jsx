@@ -9,12 +9,16 @@ import Favorites from "./Pages/Favorites/Favorites";
 import Checkout from "./Pages/CartSection/Checkout";
 import ScrollToTop from "./Components/ScrollToTop";
 import Footer from "./Components/Layout/Footer";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 function App() {
   return (
     <>
     <ShopProvider>
       <ScrollToTop />
       <Navbar />
+       <ToastContainer position="top-center" autoClose={3000} />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
