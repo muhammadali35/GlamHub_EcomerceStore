@@ -4,6 +4,7 @@ import Categories from './Categories'
 import NewArrivel from './NewArrivel'
 import HotSelling from './HotSelling'
 import Features from './Features'
+import TestimonialSection from './Testimonial'
 
 const Home = () => {
   return (
@@ -12,8 +13,8 @@ const Home = () => {
    <Categories/>
     <HotSelling/>
    <NewArrivel/>
+  <TestimonialSection/>
    <Features/>
-  
     </>
   )
 }
