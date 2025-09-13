@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Dialog } from "@headlessui/react";
 
 const Checkout = () => {
-  const { cart, quantities } = useShop();
+  const { cart,setCart, quantities, increaseQuantity, decreaseQuantity } = useShop();
   const navigate = useNavigate();
 
   const SHIPPING_FEE = 150;
@@ -16,7 +16,6 @@ const Checkout = () => {
 
   const total = subtotal + SHIPPING_FEE;
 
-  // Form state
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -30,9 +29,9 @@ const Checkout = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const pakistanCities = [
-    "Karachi","Lahore","Islamabad","Rawalpindi","Faisalabad",
-    "Multan","Sialkot","Peshawar","Hyderabad","Quetta",
-    "Sukkur","Gujranwala","Sargodha","Bahawalpur","Sahiwal",
+    "Karachi", "Lahore", "Islamabad", "Rawalpindi", "Faisalabad",
+    "Multan", "Sialkot", "Peshawar", "Hyderabad", "Quetta",
+    "Sukkur", "Gujranwala", "Sargodha", "Bahawalpur", "Sahiwal",
   ];
 
   const handleChange = (e) => {
@@ -45,10 +44,13 @@ const Checkout = () => {
       setTimeout(() => {
         setIsModalOpen(false);
         navigate("/");
+         localStorage.removeItem("cart");
+         setCart([]);
       }, 2000);
     } else {
       navigate("/payment");
     }
+  
   };
 
   return (
@@ -56,7 +58,6 @@ const Checkout = () => {
       {/* Billing Details */}
       <div className="lg:col-span-2 bg-gray-50 p-6 rounded-md shadow">
         <h2 className="text-xl font-bold mb-6">Billing Details</h2>
-
         <form className="space-y-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -80,7 +81,6 @@ const Checkout = () => {
               />
             </div>
           </div>
-
           <div>
             <label className="block text-sm mb-1">Email *</label>
             <input
@@ -91,7 +91,6 @@ const Checkout = () => {
               className="w-full border rounded-md px-3 py-2"
             />
           </div>
-
           <div>
             <label className="block text-sm mb-1">Phone *</label>
             <input
@@ -102,7 +101,6 @@ const Checkout = () => {
               className="w-full border rounded-md px-3 py-2"
             />
           </div>
-
           <div>
             <label className="block text-sm mb-1">City *</label>
             <select
@@ -117,7 +115,6 @@ const Checkout = () => {
               ))}
             </select>
           </div>
-
           <div>
             <label className="block text-sm mb-1">Street Address *</label>
             <input
@@ -145,7 +142,28 @@ const Checkout = () => {
             <tbody>
               {cart.map((item) => (
                 <tr key={item.id} className="border-b">
-                  <td className="py-2">{item.name} × {quantities[item.id] || 1}</td>
+                  <td className="py-2">
+                    <div className="flex items-center space-x-3">
+                      <span>{item.name}</span>
+                      <div className="flex items-center space-x-2 bg-gray-200 rounded-md w-max">
+                        <button
+                          onClick={() => decreaseQuantity(item.id)}
+                          className="w-6 h-6 flex items-center justify-center hover:bg-gray-300 rounded-md transition"
+                        >
+                          −
+                        </button>
+                        <span className="w-6 h-6 flex items-center justify-center">
+                          {quantities[item.id] || 1}
+                        </span>
+                        <button
+                          onClick={() => increaseQuantity(item.id)}
+                          className="w-6 h-6 flex items-center justify-center hover:bg-gray-300 rounded-md transition"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  </td>
                   <td className="py-2 text-right">
                     Rs. {(item.price * (quantities[item.id] || 1)).toFixed(2)}
                   </td>
@@ -187,7 +205,6 @@ const Checkout = () => {
               کیش آن ڈیلیوری رقم کی ادائیگی کا ایک ایسا ذریعہ ہے جو خریدار کو پارسل موصول ہونے کی صورت میں رقم ادا کرنے کی سہولت فراہم کرتا ہے
             </p>
           )}
-
           <label className="flex items-center space-x-2">
             <input
               type="radio"
