@@ -1,9 +1,17 @@
 import express from "express";
 import mongoose from "mongoose";
 import productRoutes from "./routes/productRoute.js";
+
 // import TestimonialRouter from "./routes/testimonialRoutes.js";
 
-import cors from 'cors'
+import cors from "cors";
+import dotenv from "dotenv";
+
+// .env variables load karne ke liye
+dotenv.config();
+
+
+
 const app = express();
 
 app.use(express.json());
@@ -18,13 +26,11 @@ app.use(
   })
 );
 
-
-
-mongoose
-  .connect("mongodb+srv://muhammadalikatia123_db_user:mali2002@cluster0.z5hfy96.mongodb.net/?", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+// MongoDB connect
+mongoose.connect(process.env.MONGO_URL, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.log("MongoDB connection error:", err));
 
