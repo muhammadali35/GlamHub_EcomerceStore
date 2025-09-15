@@ -75,9 +75,7 @@ export const getAllProducts = asyncHandler(async (req, res) => {
   res.status(200).json(products);
 });
 
-// @desc    Get a single product by ID
-// @route   GET /api/product/:id
-// @access  Public
+
 export const getProductById = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const product = await Product.findById(id);
@@ -88,9 +86,7 @@ export const getProductById = asyncHandler(async (req, res) => {
   res.status(200).json(product);
 });
 
-// @desc    Update a product with image uploads
-// @route   PUT /api/product/:id
-// @access  Private/Admin
+
 export const updateProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const {
@@ -125,21 +121,34 @@ export const updateProduct = asyncHandler(async (req, res) => {
   // Update fields
   product.name = name || product.name;
   product.price = price || product.price;
-  product.hotsale = hotsale !== undefined ? (hotsale === "true" || hotsale) : product.hotsale;
-  product.newarrival = newarrival !== undefined ? (newarrival === "true" || newarrival) : product.newarrival;
+  product.hotsale =
+    hotsale !== undefined ? (hotsale === "true" || hotsale) : product.hotsale;
+  product.newarrival =
+    newarrival !== undefined ? (newarrival === "true" || newarrival) : product.newarrival;
   product.category = category || product.category;
-  product.inStock = inStock !== undefined ? (inStock === "true" || inStock) : product.inStock;
+  product.inStock =
+    inStock !== undefined ? (inStock === "true" || inStock) : product.inStock;
   product.description = description || product.description;
-  product.categories = categories ? (typeof categories === "string" ? JSON.parse(categories) : categories) : product.categories;
-  product.tags = tags ? (typeof tags === "string" ? JSON.parse(tags) : tags) : product.tags;
+
+  // ✅ Fixed categories & tags handling
+  product.categories = categories
+    ? typeof categories === "string"
+      ? categories.split(",").map((c) => c.trim())
+      : categories
+    : product.categories;
+
+  product.tags = tags
+    ? typeof tags === "string"
+      ? tags.split(",").map((t) => t.trim())
+      : tags
+    : product.tags;
 
   const updatedProduct = await product.save();
   res.status(200).json({ message: "Product update ho gaya", product: updatedProduct });
 });
 
-// @desc    Delete a product
-// @route   DELETE /api/product/:id
-// @access  Private/Admin
+
+
 export const deleteProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const product = await Product.findByIdAndDelete(id);
