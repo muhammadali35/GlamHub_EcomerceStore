@@ -1,8 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import productRoutes from "./routes/productRoute.js";
-
-import TestimonialRouter from "./routes/testimonialRoutes.js";
+// import TestimonialRouter from "./routes/testimonialRoutes.js";
 
 import cors from 'cors'
 const app = express();
@@ -10,7 +9,6 @@ const app = express();
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
-import cors from "cors";
 
 app.use(
   cors({
@@ -32,7 +30,7 @@ mongoose
 
 
 app.use("/api", productRoutes);
-app.use("/api", TestimonialRouter);
+// app.use("/api", TestimonialRouter);
 
 
 app.use((err, req, res, next) => {
