@@ -1,19 +1,32 @@
 import express from "express";
 import mongoose from "mongoose";
 import productRoutes from "./routes/productRoute.js";
+<<<<<<< HEAD
 import dotenv from "dotenv";  
 
 
+=======
 
-import TestimonialRouter from "./routes/testimonialRoutes.js";
+// import TestimonialRouter from "./routes/testimonialRoutes.js";
 
-import cors from 'cors'
+import cors from "cors";
+import dotenv from "dotenv";
+
+// .env variables load karne ke liye
+dotenv.config();
+>>>>>>> 46bd97f747b106e374590bc608dc6b858cb4a73a
+
+
+
 const app = express();
 
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
+<<<<<<< HEAD
   dotenv.config();
+=======
+>>>>>>> 46bd97f747b106e374590bc608dc6b858cb4a73a
 
 app.use(
   cors({
@@ -33,7 +46,7 @@ mongoose.connect(process.env.MONGO_URL, {
 
 
 app.use("/api", productRoutes);
-app.use("/api", TestimonialRouter);
+// app.use("/api", TestimonialRouter);
 
 
 app.use((err, req, res, next) => {
