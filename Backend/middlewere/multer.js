@@ -1,11 +1,17 @@
-
+// middleware/multer.js
 import multer from "multer";
 import path from "path";
+import fs from 'fs';
 
-// Files kahan save hongi
+// Ensure uploads folder exists
+const uploadDir = './uploads';
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/"); // 'uploads/' folder mein save
+    cb(null, "uploads/");
   },
   filename: (req, file, cb) => {
     const uniqueName = Date.now() + "-" + Math.round(Math.random() * 1e9);
@@ -13,7 +19,6 @@ const storage = multer.diskStorage({
   },
 });
 
-// Sirf images allow karo
 const fileFilter = (req, file, cb) => {
   const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
   if (allowedTypes.includes(file.mimetype)) {
@@ -23,16 +28,11 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-// Multer middleware jo reusable hai
-const uploadFiles = multer({
-  storage: storage,
-  fileFilter: fileFilter,
-  limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB limit
-  },
-}).fields([
-  { name: "image", maxCount: 1 }, // Single primary image
-  { name: "images", maxCount: 5 }, // Up to 5 additional images
-]);
+// Export multer instance — without .fields() or .single()
+const upload = multer({
+  storage,
+  fileFilter,
+  limits: { fileSize: 5 * 1024 * 1024 },
+});
 
-export default uploadFiles;
+export default upload; // ✅ Ab aap routes mein .single("Image") use kar sakte hain
