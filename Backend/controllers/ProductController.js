@@ -2,61 +2,71 @@
 import {Product} from '../models/ProductModel.js'
 import asyncHandler from "express-async-handler";
 
-// @desc    Create a new product with image uploads
-// @route   POST /api/product
-// @access  Private/Admin
+
 export const createProduct = asyncHandler(async (req, res) => {
-  const {
-    name,
-    price,
-    hotsale,
-    newarrival,
-    category,
-    inStock,
-    description,
-    categories,
-    tags,
-  } = req.body;
+  try {
+    console.log("REQ BODY:", req.body);
+    console.log("REQ FILES:", req.files);
 
-  // Check required fields
-  if (!name || !price || !category || inStock === undefined || !description || !categories || !tags) {
-    res.status(400);
-    throw new Error("Sab required fields bharo");
+    const {
+      name,
+      price,
+      hotsale,
+      newarrival,
+      category,
+      inStock,
+      description,
+      categories,
+      tags,
+    } = req.body;
+
+    if (!name || !price || !category || !description) {
+      return res.status(400).json({ message: "Sab required fields bharo" });
+    }
+
+    let imageUrl = "";
+    let imagesUrls = [];
+    const baseUrl = `${req.protocol}://${req.get("host")}/uploads/`;
+
+    if (req.files && req.files["image"]) {
+      imageUrl = baseUrl + req.files["image"][0].filename;
+    } else {
+      return res.status(400).json({ message: "Primary image chahiye" });
+    }
+
+    if (req.files && req.files["images"]) {
+      imagesUrls = req.files["images"].map((file) => baseUrl + file.filename);
+    }
+
+    let parsedCategories = [];
+    let parsedTags = [];
+
+    try {
+      parsedCategories = typeof categories === "string" ? JSON.parse(categories) : categories;
+    } catch {}
+    try {
+      parsedTags = typeof tags === "string" ? JSON.parse(tags) : tags;
+    } catch {}
+
+    const product = await Product.create({
+      name,
+      price,
+      image: imageUrl,
+      images: imagesUrls.length > 0 ? imagesUrls : [imageUrl],
+      hotsale: hotsale === "true" || hotsale,
+      newarrival: newarrival === "true" || newarrival,
+      category,
+      inStock: inStock === "true" || inStock,
+      description,
+      categories: parsedCategories,
+      tags: parsedTags,
+    });
+
+    res.status(201).json({ message: "Product create ho gaya", product });
+  } catch (err) {
+    console.error("Error creating product:", err);
+    res.status(500).json({ message: "Server error" });
   }
-
-  // Handle image uploads
-  let imageUrl = "";
-  let imagesUrls = [];
-
-  const baseUrl = `${req.protocol}://${req.get("host")}/uploads/`;
-
-  if (req.files && req.files["image"]) {
-    imageUrl = baseUrl + req.files["image"][0].filename;
-  } else {
-    res.status(400);
-    throw new Error("Primary image (image) chahiye");
-  }
-
-  if (req.files && req.files["images"]) {
-    imagesUrls = req.files["images"].map((file) => baseUrl + file.filename);
-  }
-
-  // Create new product
-  const product = await Product.create({
-    name,
-    price,
-    image: imageUrl,
-    images: imagesUrls.length > 0 ? imagesUrls : [imageUrl],
-    hotsale: hotsale === "true" || hotsale || false,
-    newarrival: newarrival === "true" || newarrival || false,
-    category,
-    inStock: inStock === "true" || inStock,
-    description,
-    categories: typeof categories === "string" ? JSON.parse(categories) : categories,
-    tags: typeof tags === "string" ? JSON.parse(tags) : tags,
-  });
-
-  res.status(201).json({ message: "Product create ho gaya", product });
 });
 
 
