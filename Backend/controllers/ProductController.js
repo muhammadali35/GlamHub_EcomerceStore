@@ -59,9 +59,7 @@ export const createProduct = asyncHandler(async (req, res) => {
   res.status(201).json({ message: "Product create ho gaya", product });
 });
 
-// @desc    Get all products
-// @route   GET /api/product
-// @access  Public
+
 export const getAllProducts = asyncHandler(async (req, res) => {
   const products = await Product.find();
   res.status(200).json(products);
