@@ -18,3 +18,4 @@ router.put("/product/:id", uploadFiles, updateProduct);
 router.delete("/product/:id", deleteProduct);
 
 export default router;
+  
