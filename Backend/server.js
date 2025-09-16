@@ -1,15 +1,18 @@
 import express from "express";
 import mongoose from "mongoose";
 import productRoutes from "./routes/productRoute.js";
+
 import TestimonialRouter from "./routes/testimonialRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
 
 
+import dotenv from "dotenv";  
 import cors from "cors";
 import dotenv from "dotenv";
 
-// .env variables load karne ke liye
+
 dotenv.config();
+
 
 
 
@@ -17,6 +20,9 @@ const app = express();
 
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
+
+
+  dotenv.config();
 
 
 app.use(
