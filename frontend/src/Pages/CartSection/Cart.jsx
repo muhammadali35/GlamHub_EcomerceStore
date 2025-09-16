@@ -60,7 +60,7 @@ const Cart = () => {
                   {/* ✅ Product */}
                   <td className="flex items-center gap-4 px-4 py-4">
                     <img
-                      src={item.img}
+                      src={`http://localhost:5000/uploads${item.image}`}
                       alt={item.name}
                       className="w-20 h-20 object-cover rounded"
                     />

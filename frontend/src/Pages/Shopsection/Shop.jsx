@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 
 // Import banner images
 import cosmaticb from "./../../assets/cosmat.jpg";
@@ -7,7 +7,7 @@ import mobileb from "./../../assets/mobile.jpeg";
 import Kitchenb from "./../../assets/Kicthen.jpg";
 
 // Import dummy data and product card
-import { productsData } from "../../Components/DumyProducts";
+// import { productsData } from "../../Components/DumyProducts";
 import ProductCard from "../../Components/Cards/ProductCard";
 
 // Category-wise banner images
@@ -17,11 +17,16 @@ const bannerImages = {
   "kitchen-accessories": Kitchenb,
 };
 
+
 export default function Shop() {
   const { category } = useParams();
   const currentCategory = category || "cosmetics";
 
+    const API_URL = import.meta.env.VITE_API_URL;
+
+
   // States
+  const [productsData,setProductsData]=useState([])
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [stockFilter, setStockFilter] = useState("all");
@@ -33,8 +38,27 @@ export default function Shop() {
   const [isPriceOpen, setIsPriceOpen] = useState(true);
   const [isStockOpen, setIsStockOpen] = useState(true);
 
+
+     async function getAllProducts () {
+
+       let response= await fetch("http://localhost:5000/api/product",{
+        method:"GET"
+       })
+        let data= await response.json()
+        if (response.ok) {
+           setProductsData(data)
+        }
+     }
+    useEffect(()=>{
+       getAllProducts()
+    },[productsData])
+
   // Get products
-  let products = [...(productsData[currentCategory] || [])];
+let products = productsData.filter(
+  (p) => p.category === currentCategory
+);
+
+
 
   // Stock counts
   const inStockCount = products.filter((p) => p.inStock).length;

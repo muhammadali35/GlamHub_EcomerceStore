@@ -1,6 +1,8 @@
 import express from "express";
 import mongoose from "mongoose";
 import productRoutes from "./routes/productRoute.js";
+import TestimonialRouter from "./routes/testimonialRoutes.js";
+import reviewRoutes from "./routes/reviewRoutes.js";
 import dotenv from "dotenv";  
 import cors from "cors";
 
@@ -21,7 +23,11 @@ app.use("/uploads", express.static("uploads"));
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: [
+      "http://localhost:5173"
+      ,"http://localhost:5174"
+    ],
+
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
@@ -37,8 +43,8 @@ mongoose.connect(process.env.MONGO_URL, {
 
 
 app.use("/api", productRoutes);
-// app.use("/api", TestimonialRouter);
-
+app.use("/api", TestimonialRouter);
+app.use("/api/review", reviewRoutes);
 
 app.use((err, req, res, next) => {
   res.status(err.status || 500).json({
