@@ -14,6 +14,7 @@ export function ShopProvider({ children }) {
   });
 
   const [quantities, setQuantities] = useState({});
+  const [checkoutForm, setCheckoutForm] = useState({});
 
   // 🛒 Save cart in localStorage whenever it changes
   useEffect(() => {
@@ -90,6 +91,8 @@ export function ShopProvider({ children }) {
         decreaseQuantity,
         toggleFavorite,
         setQuantities,
+        checkoutForm,
+        setCheckoutForm,
       }}
     >
       {children}

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useShop } from "../../context/ShopContext";
 import { Link, useNavigate } from "react-router-dom";
 import { Dialog } from "@headlessui/react";
@@ -7,21 +7,42 @@ import "react-toastify/dist/ReactToastify.css";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
 
 const Checkout = () => {
-  const { cart, setCart, quantities, setQuantities, increaseQuantity, decreaseQuantity } = useShop();
+  const {
+    cart,
+    setCart,
+    quantities,
+    setQuantities,
+    increaseQuantity,
+    decreaseQuantity,
+    checkoutForm,
+    setCheckoutForm, // ✅ from context
+  } = useShop();
+
   const navigate = useNavigate();
 
   const SHIPPING_FEE = 150;
-  const subtotal = cart.reduce((acc, item) => acc + item.price * (quantities[item.id] || 1), 0);
+  const subtotal = cart.reduce(
+    (acc, item) => acc + item.price * (quantities[item.id] || 1),
+    0
+  );
   const total = subtotal + SHIPPING_FEE;
 
-  const [form, setForm] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    address: "",
-    city: "",
-  });
+  // ✅ initialize form from context (persist)
+  const [form, setForm] = useState(
+    checkoutForm || {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      address: "",
+      city: "",
+    }
+  );
+
+  // ✅ keep form synced with context
+  useEffect(() => {
+    setCheckoutForm(form);
+  }, [form]);
 
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -44,69 +65,70 @@ const Checkout = () => {
   );
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const updated = { ...form, [e.target.name]: e.target.value };
+    setForm(updated); // ✅ update local
   };
 
   const handleCitySelect = (city) => {
-    setForm({ ...form, city });
+    const updated = { ...form, city };
+    setForm(updated);
     setCityQuery("");
     if (cityInputRef.current) cityInputRef.current.blur();
   };
 
-// ✅ Submit Order (Backend)
-const submitOrderToServer = async (paymentMethodSelected) => {
-  try {
-    const fd = new FormData();
-    fd.append("orderId", `ORDER_${Date.now()}`);
-    fd.append("cart", JSON.stringify(cart));
-    fd.append("quantities", JSON.stringify(quantities || {}));
-    fd.append("customerInfo", JSON.stringify(form));
-    fd.append("paymentMethod", paymentMethodSelected);
+  // ✅ Submit Order (Backend)
+  const submitOrderToServer = async (paymentMethodSelected) => {
+    try {
+      const fd = new FormData();
+      fd.append("orderId", `ORDER_${Date.now()}`);
+      fd.append("cart", JSON.stringify(cart));
+      fd.append("quantities", JSON.stringify(quantities || {}));
+      fd.append("customerInfo", JSON.stringify(form));
+      fd.append("paymentMethod", paymentMethodSelected);
+      fd.append("totalAmount", total);
 
-    // ⚡ yahan change kiya → totalAmount bhejna hoga
-    fd.append("totalAmount", total);
+      const res = await fetch("http://localhost:5000/api/orders", {
+        method: "POST",
+        body: fd,
+      });
 
-    const res = await fetch("http://localhost:5000/api/orders", {
-      method: "POST",
-      body: fd,
-    });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Order failed");
 
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Order failed");
+      setCart([]);
+      setQuantities({});
+      localStorage.removeItem("cart");
+      setCheckoutForm({}); // ✅ clear after success
 
-    // ✅ Success
-    setCart([]);
-    setQuantities({});
-    localStorage.removeItem("cart");
+      toast.success("✅ Order placed successfully!");
+      setIsModalOpen(true);
 
-    toast.success("✅ Order placed successfully!");
-    setIsModalOpen(true);
+      setTimeout(() => {
+        setIsModalOpen(false);
+        navigate("/");
+      }, 2000);
+    } catch (err) {
+      console.error("Order submit error:", err);
+      toast.error("❌ Failed to place order. Try again.");
+    }
+  };
 
-    // Auto close modal and redirect
-    setTimeout(() => {
-      setIsModalOpen(false);
-      navigate("/");
-    }, 2000);
-  } catch (err) {
-    console.error("Order submit error:", err);
-    toast.error("❌ Failed to place order. Try again.");
-  }
-};
-
-
-
-  // ✅ Place Order Handler
   const handlePlaceOrder = () => {
-    if (!form.firstName || !form.lastName || !form.email || !form.phone || !form.address || !form.city) {
+    if (
+      !form.firstName ||
+      !form.lastName ||
+      !form.email ||
+      !form.phone ||
+      !form.address ||
+      !form.city
+    ) {
       toast.error("⚠️ Please fill all required fields");
       return;
     }
 
     if (paymentMethod === "cod") {
-      // COD → directly submit
       submitOrderToServer("cod");
     } else {
-      // Online → redirect to Payment page
       navigate("/payment", {
         state: {
           cart,
@@ -114,13 +136,12 @@ const submitOrderToServer = async (paymentMethodSelected) => {
           customerInfo: form,
           orderId: `ORDER_${Date.now()}`,
           total,
-          paymentMethod: "online"
-        }
+          paymentMethod: "online",
+        },
       });
     }
   };
 
-  // ✅ Toggle Payment Options
   const toggleCod = () => {
     setIsCodOpen(!isCodOpen);
     if (!isCodOpen) setIsOnlineOpen(false);
@@ -130,7 +151,6 @@ const submitOrderToServer = async (paymentMethodSelected) => {
     setIsOnlineOpen(!isOnlineOpen);
     if (!isOnlineOpen) setIsCodOpen(false);
   };
-
   return (
     <div className="container mx-auto px-4 py-8 md:px-6 lg:px-8">
       <ToastContainer />
