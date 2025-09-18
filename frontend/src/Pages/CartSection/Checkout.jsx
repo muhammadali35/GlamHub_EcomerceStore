@@ -53,42 +53,82 @@ const Checkout = () => {
     if (cityInputRef.current) cityInputRef.current.blur();
   };
 
+// ✅ Submit Order (Backend)
+const submitOrderToServer = async (paymentMethodSelected) => {
+  try {
+    const fd = new FormData();
+    fd.append("orderId", `ORDER_${Date.now()}`);
+    fd.append("cart", JSON.stringify(cart));
+    fd.append("quantities", JSON.stringify(quantities || {}));
+    fd.append("customerInfo", JSON.stringify(form));
+    fd.append("paymentMethod", paymentMethodSelected);
+
+    // ⚡ yahan change kiya → totalAmount bhejna hoga
+    fd.append("totalAmount", total);
+
+    const res = await fetch("http://localhost:5000/api/orders", {
+      method: "POST",
+      body: fd,
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Order failed");
+
+    // ✅ Success
+    setCart([]);
+    setQuantities({});
+    localStorage.removeItem("cart");
+
+    toast.success("✅ Order placed successfully!");
+    setIsModalOpen(true);
+
+    // Auto close modal and redirect
+    setTimeout(() => {
+      setIsModalOpen(false);
+      navigate("/");
+    }, 2000);
+  } catch (err) {
+    console.error("Order submit error:", err);
+    toast.error("❌ Failed to place order. Try again.");
+  }
+};
+
+
+
+  // ✅ Place Order Handler
   const handlePlaceOrder = () => {
-    // ✅ Basic Validation
     if (!form.firstName || !form.lastName || !form.email || !form.phone || !form.address || !form.city) {
-      toast.error("Please fill all required fields");
+      toast.error("⚠️ Please fill all required fields");
       return;
     }
 
     if (paymentMethod === "cod") {
-      setCart([]);
-      setQuantities({});
-      localStorage.removeItem("cart");
-
-      setIsModalOpen(true);
-
-      setTimeout(() => {
-        setIsModalOpen(false);
-        navigate("/");
-        toast.success("✅ Order placed successfully! We'll contact you soon.", {
-          position: "top-center",
-          autoClose: 3000,
-        });
-      }, 2000);
+      // COD → directly submit
+      submitOrderToServer("cod");
     } else {
-      navigate("/payment");
+      // Online → redirect to Payment page
+      navigate("/payment", {
+        state: {
+          cart,
+          quantities,
+          customerInfo: form,
+          orderId: `ORDER_${Date.now()}`,
+          total,
+          paymentMethod: "online"
+        }
+      });
     }
   };
 
-  // ✅ Toggle Payment Methods — Mutually Exclusive
+  // ✅ Toggle Payment Options
   const toggleCod = () => {
     setIsCodOpen(!isCodOpen);
-    if (!isCodOpen) setIsOnlineOpen(false); // Close Online if opening COD
+    if (!isCodOpen) setIsOnlineOpen(false);
   };
 
   const toggleOnline = () => {
     setIsOnlineOpen(!isOnlineOpen);
-    if (!isOnlineOpen) setIsCodOpen(false); // Close COD if opening Online
+    if (!isOnlineOpen) setIsCodOpen(false);
   };
 
   return (
@@ -179,10 +219,7 @@ const Checkout = () => {
                     {filteredCities.map((city) => (
                       <li
                         key={city}
-                        onClick={() => {
-                          setForm({ ...form, city });
-                          setCityQuery("");
-                        }}
+                        onClick={() => handleCitySelect(city)}
                         className="px-4 py-2 hover:bg-yellow-50 cursor-pointer border-b border-gray-50 last:border-b-0"
                       >
                         {city}
@@ -209,7 +246,7 @@ const Checkout = () => {
           </div>
         </div>
 
-        {/* Order Summary */}
+        {/* Order Summary + Payment Methods */}
         <div className="lg:col-span-1">
           <div className="bg-white p-8 rounded-2xl shadow-xl border sticky top-6">
             <h2 className="text-2xl font-bold text-gray-800 mb-8">Your Order</h2>

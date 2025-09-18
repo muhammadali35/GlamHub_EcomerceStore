@@ -92,7 +92,7 @@ export default function ProductView() {
           <Swiper
             spaceBetween={10}
             thumbs={{ swiper: thumbsSwiper }}
-            modules={[Navigation, Thumbs, Autoplay]}
+            modules={[Navigation, Thumbs, Autoplay]}  
             autoplay={{ delay: 7000, disableOnInteraction: false }}
             onSwiper={(swiper) => (swiperRef.current = swiper)}
             className="rounded-xl shadow-lg"

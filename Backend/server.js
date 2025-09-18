@@ -4,11 +4,13 @@ import productRoutes from "./routes/productRoute.js";
 
 import TestimonialRouter from "./routes/testimonialRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js"; // ✅ .js extension required in import
+
 
 
 import dotenv from "dotenv";  
 import cors from "cors";
-import dotenv from "dotenv";
+
 
 
 dotenv.config();
@@ -49,6 +51,7 @@ mongoose.connect(process.env.MONGO_URL, {
 app.use("/api", productRoutes);
 app.use("/api", TestimonialRouter);
 app.use("/api/review", reviewRoutes);
+app.use("/api/orders", orderRoutes);
 
 app.use((err, req, res, next) => {
   res.status(err.status || 500).json({
