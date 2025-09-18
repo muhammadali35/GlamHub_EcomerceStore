@@ -44,19 +44,19 @@ const addToCart = (product) => {
 
 
   // ➕ Increase quantity
-  const increaseQuantity = (id) => {
+  const increaseQuantity = (_id) => {
     setQuantities((prev) => {
-      const currentQty = prev[id] || 1;
+      const currentQty = prev[_id] || 1;
       if (currentQty >= 10) return prev; // Prevent more than 10
-      return { ...prev, [id]: currentQty + 1 };
+      return { ...prev, [_id]: currentQty + 1 };
     });
   };
 
   // ➖ Decrease quantity
-  const decreaseQuantity = (id) => {
+  const decreaseQuantity = (_id) => {
     setQuantities((prev) => ({
       ...prev,
-      [id]: prev[id] > 1 ? prev[id] - 1 : 1,
+      [_id]: prev[_id] > 1 ? prev[_id] - 1 : 1,
     }));
   };
 
