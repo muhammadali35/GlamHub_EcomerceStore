@@ -33,7 +33,7 @@ const Favorites = () => {
             >
               {/* Image Section */}
               <div className="relative overflow-hidden bg-gray-100">
-                <Link to={`/product/${product.category}/${product.id}`}>
+                <Link to={`/product/${product.category}/${product._id}`}>
                   <img
                     src={product.img}
                     alt={product.name}
@@ -53,7 +53,7 @@ const Favorites = () => {
                 </button>
 
                 {/* View Button */}
-                <Link to={`/product/${product.category}/${product.id}`}>
+                <Link to={`/product/${product.category}/${product._id}`}>
                   <button className="absolute top-14 right-3 bg-white text-black p-2 rounded-full shadow opacity-0 group-hover:opacity-100 transition duration-500 hover:bg-black hover:text-white">
                     👁
                   </button>

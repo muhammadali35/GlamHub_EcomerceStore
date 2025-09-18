@@ -143,7 +143,7 @@ const submitOrderToServer = async (paymentMethodSelected) => {
         </div>
         <Link
           to="/cart"
-          className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-full font-medium transition flex items-center space-x-2"
+          className="bg-gray-200 hover:bg-gray-300 text-nowrap ml-2  text-gray-800 px-4 py-2 rounded-full font-medium transition flex items-center space-x-2"
         >
           ← Back to Cart
         </Link>

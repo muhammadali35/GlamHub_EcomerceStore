@@ -2,8 +2,6 @@ import { useState, useRef, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Thumbs, Autoplay } from "swiper/modules";
-import { register } from 'swiper/element/bundle';
-register();
 
 import "swiper/css";
 import "swiper/css/navigation";
@@ -28,33 +26,28 @@ export default function ProductView() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
-  // 👇 Swiper states — unchanged
+  // 👇 Swiper states
   const [quantity, setQuantity] = useState(1);
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const swiperRef = useRef(null);
 
-  // ✅ FETCH PRODUCT + RELATED PRODUCTS + REVIEWS (ALL FROM API)
+  // ✅ FETCH PRODUCT + RELATED PRODUCTS
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         setLoading(true);
         setError(false);
 
-        // 👇 STEP 1: Fetch single product by ID
         const productRes = await axios.get(`${API_URL}/api/product/${id}`);
         const productData = productRes.data;
 
-        if (!productData) {
-          throw new Error("Product not found");
-        }
+        if (!productData) throw new Error("Product not found");
 
-        // 👇 STEP 2: Fetch ALL products for related (same category)
         const allProductsRes = await axios.get(`${API_URL}/api/product`);
         const allProducts = allProductsRes.data || [];
 
-        // ✅ Filter related by category — exclude self — limit 10
         const related = allProducts
-          .filter(p => p.category === productData.category && p._id !== id)
+          .filter((p) => p.category === productData.category && p._id !== id)
           .slice(0, 10);
 
         setRelatedProducts(related);
@@ -83,17 +76,22 @@ export default function ProductView() {
   if (error || !product) {
     return (
       <div className="container mx-auto px-6 py-20 text-center">
-        <p className="text-red-500 text-xl">Product not found or error occurred.</p>
-        <Link to="/" className="text-blue-500 hover:underline mt-4 inline-block">
+        <p className="text-red-500 text-xl">
+          Product not found or error occurred.
+        </p>
+        <Link
+          to="/"
+          className="text-blue-500 hover:underline mt-4 inline-block"
+        >
           ← Back to Home
         </Link>
       </div>
     );
   }
 
-  // ──────────────────────────────────────────────────────────────────────
-  // 🎛️ HANDLERS — UNCHANGED
-  // ──────────────────────────────────────────────────────────────────────
+  // ───────────────────────────────────────────
+  // 🎛️ HANDLERS
+  // ───────────────────────────────────────────
   const handleQtyChange = (type) => {
     if (type === "inc") {
       setQuantity(Math.min(10, quantity + 1));
@@ -110,25 +108,23 @@ export default function ProductView() {
     if (swiperRef.current) swiperRef.current.slideNext();
   };
 
-  // ──────────────────────────────────────────────────────────────────────
-  // 🌟 UI HELPERS — UNCHANGED
-  // ──────────────────────────────────────────────────────────────────────
+  // ───────────────────────────────────────────
+  // 🌟 UI HELPERS
+  // ───────────────────────────────────────────
   const stockStatus = product.inStock
     ? "Ready to Ship - In Stock"
     : "Out of Stock - Available on Backorder";
 
   const deliveryText = "Estimated Delivery: 4 to 7 days";
 
-  // ──────────────────────────────────────────────────────────────────────
-  // 🖥️ RENDER — BILKUL TUMHARA — SIRF `product` API WALA HOGAYA
-  // ──────────────────────────────────────────────────────────────────────
+  // ───────────────────────────────────────────
+  // 🖥️ RENDER
+  // ───────────────────────────────────────────
   return (
     <div className="container mx-auto px-6 py-12">
       <ToastContainer position="top-right" autoClose={3000} />
 
-      {/* ────────────────────────────────────────────────────────────────────── */}
-      {/* 🖼️ PRODUCT GALLERY — PRIMARY IMAGE + GALLERY */}
-      {/* ────────────────────────────────────────────────────────────────────── */}
+      {/* 🖼️ PRODUCT GALLERY */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         <div className="relative">
           <button
@@ -146,84 +142,80 @@ export default function ProductView() {
             ›
           </button>
 
-          {/* 👇 MAIN SWIPER — PRIMARY IMAGE + GALLERY */}
-          <Swiper
-            spaceBetween={10}
-            thumbs={{ swiper: thumbsSwiper }}
-            modules={[Navigation, Thumbs, Autoplay]}  
-            autoplay={{ delay: 7000, disableOnInteraction: false }}
-            onSwiper={(swiper) => (swiperRef.current = swiper)}
-            className="rounded-xl shadow-lg"
-          >
-            {/* ✅ PRIMARY IMAGE — pehla slide */}
-            <SwiperSlide>
-              <div className="overflow-hidden rounded-xl">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-[500px] object-cover transform transition-duration-500 hover:scale-110"
-                />
-              </div>
-            </SwiperSlide>
-
-            {/* ✅ GALLERY IMAGES */}
-            {product.images?.map((img, index) => (
-              <SwiperSlide key={index}>
+          {/* 👇 MAIN SWIPER */}
+          {product.image && (
+            <Swiper
+              spaceBetween={10}
+              thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
+              modules={[Navigation, Thumbs, Autoplay]}
+              autoplay={{ delay: 7000, disableOnInteraction: false }}
+              onSwiper={(swiper) => (swiperRef.current = swiper)}
+              className="rounded-xl shadow-lg"
+            >
+              <SwiperSlide>
                 <div className="overflow-hidden rounded-xl">
                   <img
-                    src={img}
-                    alt={`Product ${index + 1}`}
-                    className="w-full h-[500px] object-cover transform transition-duration-500 hover:scale-110"
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-[500px] object-cover transform transition duration-500 hover:scale-110"
                   />
                 </div>
               </SwiperSlide>
-            ))}
-          </Swiper>
 
-          {/* 👇 THUMBNAILS — PRIMARY + GALLERY */}
-          <Swiper
-            onSwiper={setThumbsSwiper}
-            spaceBetween={10}
-            slidesPerView={4}
-            watchSlidesProgress={true}
-            modules={[Thumbs]}
-            className="mt-4"
-          >
-            {/* ✅ Thumbnail for PRIMARY IMAGE */}
-            <SwiperSlide>
-              <img
-                src={product.image}
-                alt="Main Product"
-                className={`w-full h-28 object-cover border-2 rounded-md cursor-pointer transition hover:opacity-80 ${
-                  thumbsSwiper?.activeIndex === 0 ? "border-yellow-500" : "border-gray-300"
-                }`}
-              />
-            </SwiperSlide>
+              {product.images?.map((img, index) => (
+                <SwiperSlide key={index}>
+                  <div className="overflow-hidden rounded-xl">
+                    <img
+                      src={img}
+                      alt={`Product ${index + 1}`}
+                      className="w-full h-[500px] object-cover transform transition duration-500 hover:scale-110"
+                    />
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          )}
 
-            {/* ✅ Thumbnails for GALLERY IMAGES */}
-            {product.images?.map((img, index) => (
-              <SwiperSlide key={index + 1}>
+          {/* 👇 THUMBNAILS */}
+          {product.image && (
+            <Swiper
+              onSwiper={setThumbsSwiper}
+              spaceBetween={10}
+              slidesPerView={4}
+              watchSlidesProgress={true}
+              modules={[Thumbs]}
+              className="mt-4"
+            >
+              <SwiperSlide>
                 <img
-                  src={img}
-                  alt={`Thumbnail ${index + 1}`}
-                  className={`w-full h-28 object-cover border-2 rounded-md cursor-pointer transition hover:opacity-80 ${
-                    thumbsSwiper?.activeIndex === index + 1 ? "border-yellow-500" : "border-gray-300"
-                  }`}
+                  src={product.image}
+                  alt="Main Product"
+                  className="w-full h-28 object-cover border-2 rounded-md cursor-pointer transition hover:opacity-80"
                 />
               </SwiperSlide>
-            ))}
-          </Swiper>
+
+              {product.images?.map((img, index) => (
+                <SwiperSlide key={index + 1}>
+                  <img
+                    src={img}
+                    alt={`Thumbnail ${index + 1}`}
+                    className="w-full h-28 object-cover border-2 rounded-md cursor-pointer transition hover:opacity-80"
+                  />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          )}
         </div>
 
-        {/* ────────────────────────────────────────────────────────────────────── */}
-        {/* 🏷️ PRODUCT INFO — UNCHANGED */}
-        {/* ────────────────────────────────────────────────────────────────────── */}
+        {/* 🏷️ PRODUCT INFO */}
         <div className="flex flex-col space-y-5">
           <div>
             <span className="text-xl text-gray-500 uppercase tracking-wide">
               {product.categories?.join(", ")}
             </span>
-            <h1 className="text-3xl font-bold text-gray-800 mt-1">{product.name}</h1>
+            <h1 className="text-3xl font-bold text-gray-800 mt-1">
+              {product.name}
+            </h1>
           </div>
           <p className="text-gray-600 leading-relaxed">{product.description}</p>
           <div className="text-2xl font-bold text-black">Rs {product.price}</div>
@@ -244,7 +236,9 @@ export default function ProductView() {
               >
                 −
               </button>
-              <span className="w-10 h-10 flex items-center justify-center">{quantity}</span>
+              <span className="w-10 h-10 flex items-center justify-center">
+                {quantity}
+              </span>
               <button
                 onClick={() => handleQtyChange("inc")}
                 className="w-10 h-10 flex items-center justify-center hover:bg-gray-300 rounded-md transition"
@@ -257,16 +251,17 @@ export default function ProductView() {
           <div className="flex space-x-3 mt-6">
             {product.inStock ? (
               <>
-                <button
-                  onClick={() => addToCart(product, quantity)}
-                  className="flex-1 bg-brand-gold text-white px-6 py-3 rounded-md shadow hover:bg-black transition"
-                >
-                  ADD TO CART
-                </button>
+              <button
+  onClick={() => addToCart(product, quantity)}
+  className="flex-1 whitespace-nowrap bg-brand-gold text-white px-7 py-3 md:px-6 md:py-3 rounded-md shadow hover:bg-black transition"
+>
+  ADD TO CART
+</button>
+
                 <Link
                   onClick={() => addToCart(product, quantity)}
                   to="/checkout"
-                  className="flex-1 bg-gray-800 text-white px-6 py-3 rounded-md shadow hover:bg-gray-700 transition text-center"
+                  className="flex-1 bg-gray-800 text-white px-7 py-3 text-nowrap  md:px-6 md:py-3 rounded-md shadow hover:bg-gray-700 transition text-center"
                 >
                   BUY NOW
                 </Link>
@@ -280,24 +275,27 @@ export default function ProductView() {
 
           <div className="mt-4 text-sm px-4 py-2 rounded-full w-max bg-gray-100">
             <span
-              className={`font-medium ${product.inStock ? "text-green-600" : "text-red-600"}`}
+              className={`font-medium ${
+                product.inStock ? "text-green-600" : "text-red-600"
+              }`}
             >
               {stockStatus}
             </span>
           </div>
-          <div className="mt-4 text-sm px-4 py-2 rounded-full w-max bg-gray-100">{deliveryText}</div>
+          <div className="mt-4 text-sm px-4 py-2 rounded-full w-max bg-gray-100">
+            {deliveryText}
+          </div>
         </div>
       </div>
 
-      {/* ────────────────────────────────────────────────────────────────────── */}
-      {/* 💬 CUSTOMER REVIEWS — REAL DATA FROM product.reviews */}
-      {/* ────────────────────────────────────────────────────────────────────── */}
-      <ReviewSection product={product} API_URL={API_URL} /> {/* 👈— product._id ki jagah product pass karo — warna reviews nahi dikhega */}
+      {/* 💬 CUSTOMER REVIEWS */}
+      <ReviewSection product={product} API_URL={API_URL} />
 
-      {/* ────────────────────────────────────────────────────────────────────── */}
-      {/* 🔄 RELATED PRODUCTS — REAL DATA FROM API */}
-      {/* ────────────────────────────────────────────────────────────────────── */}
-      <RelatedProductsSection sliceProducts={relatedProducts} category={category} />
+      {/* 🔄 RELATED PRODUCTS */}
+      <RelatedProductsSection
+        sliceProducts={relatedProducts}
+        category={category}
+      />
     </div>
   );
 }

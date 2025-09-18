@@ -26,17 +26,22 @@ export function ShopProvider({ children }) {
   }, [favorites]);
 
   // 🛒 Add to cart
-  const addToCart = (product) => {
-    setCart((prevCart) => {
-      const exists = prevCart.find((item) => item.id === product.id);
-      if (exists) {
-        return prevCart;
-      } else {
-        setQuantities((prev) => ({ ...prev, [product.id]: 1 }));
-        return [...prevCart, product];
-      }
-    });
-  };
+const addToCart = (product) => {
+  setCart((prevCart) => {
+    const exists = prevCart.find((item) => item._id === product._id);
+    if (exists) {
+      setQuantities((prev) => ({
+        ...prev,
+        [product._id]: (prev[product._id] || 1) + 1,
+      }));
+      return prevCart;
+    } else {
+      setQuantities((prev) => ({ ...prev, [product._id]: 1 }));
+      return [...prevCart, product];
+    }
+  });
+};
+
 
   // ➕ Increase quantity
   const increaseQuantity = (id) => {
@@ -56,26 +61,27 @@ export function ShopProvider({ children }) {
   };
 
   // ❌ Remove from cart
-  const removeFromCart = (id) => {
-    setCart((prevCart) => prevCart.filter((item) => item.id !== id));
-    setQuantities((prev) => {
-      const newQuantities = { ...prev };
-      delete newQuantities[id];
-      return newQuantities;
-    });
-  };
+const removeFromCart = (_id) => {
+  setCart((prevCart) => prevCart.filter((item) => item._id !== _id));
+  setQuantities((prev) => {
+    const newQuantities = { ...prev };
+    delete newQuantities[_id];
+    return newQuantities;
+  });
+};
+
 
   // ❤️ Toggle favorites
-  const toggleFavorite = (product) => {
-    setFavorites((prev) => {
-      const exists = prev.find((item) => item.id === product.id);
-      if (exists) {
-        return prev.filter((item) => item.id !== product.id);
-      } else {
-        return [...prev, product];
-      }
-    });
-  };
+ const toggleFavorite = (product) => {
+  setFavorites((prev) => {
+    const exists = prev.find((item) => item._id === product._id);
+    if (exists) {
+      return prev.filter((item) => item._id !== product._id);
+    } else {
+      return [...prev, product];
+    }
+  });
+};
 
   return (
     <ShopContext.Provider

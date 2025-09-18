@@ -120,7 +120,7 @@ const Cart = () => {
 
                         {/* Remove */}
                         <button
-                          onClick={() => removeFromCart(item.id)}
+                          onClick={() => removeFromCart(item._id)}
                           className="mt-4 text-red-500 hover:text-red-700 font-medium flex items-center space-x-2 transition"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

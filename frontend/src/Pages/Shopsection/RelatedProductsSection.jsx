@@ -11,7 +11,7 @@ export default function RelatedProductsSection({ sliceProducts, category }) {
 
   return (
     <div className="mt-20">
-      <h2 className="text-2xl font-bold mb-6">Related Products</h2>
+      <h2 className="lg:text-3xl md:text-3xl font-bold mb-6">Related Products</h2>
       <div className="relative">
         <button
           type="button"
