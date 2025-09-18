@@ -40,7 +40,11 @@ export function ShopProvider({ children }) {
 
   // ➕ Increase quantity
   const increaseQuantity = (id) => {
-    setQuantities((prev) => ({ ...prev, [id]: (prev[id] || 1) + 1 }));
+    setQuantities((prev) => {
+      const currentQty = prev[id] || 1;
+      if (currentQty >= 10) return prev; // Prevent more than 10
+      return { ...prev, [id]: currentQty + 1 };
+    });
   };
 
   // ➖ Decrease quantity
@@ -76,6 +80,7 @@ export function ShopProvider({ children }) {
   return (
     <ShopContext.Provider
       value={{
+        setCart,
         cart,
         favorites,
         quantities,

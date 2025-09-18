@@ -1,96 +1,99 @@
-import { useState, useRef, useEffect } from "react"; // ✅ useEffect import kiya
+import { useState, useRef, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { productsData } from "../../Components/DumyProducts";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Thumbs, Autoplay } from "swiper/modules";
+import { register } from 'swiper/element/bundle';
+register();
+
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/thumbs";
-import { toast } from "react-toastify";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useShop } from "../../context/ShopContext";
-import ProductCard from "../../Components/Cards/ProductCard";
+import axios from "axios";
 
-// ──────────────────────────────────────────────────────────────────────
-// 🧩 COMPONENT: ProductView
-// ──────────────────────────────────────────────────────────────────────
+// ✅ IMPORT NEW COMPONENTS
+import ReviewSection from "./ReviewSection";
+import RelatedProductsSection from "./RelatedProductsSection";
+
 export default function ProductView() {
   const { category, id } = useParams();
   const { addToCart } = useShop();
-  const API_URL = import.meta.env.VITE_API_URL;
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
-  // ──────────────────────────────────────────────────────────────────────
-  // 🎯 PRODUCT DATA SETUP
-  // ──────────────────────────────────────────────────────────────────────
-  const categoryProducts = productsData[category] || [];
-  const product = categoryProducts.find((p) => p.id.toString() === id.toString());
+  // 👇 States for API data
+  const [product, setProduct] = useState(null);
+  const [relatedProducts, setRelatedProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  // If product not found
-  if (!product) {
-    return <p className="text-center py-20">Product not found</p>;
-  }
-
-  const relatedProducts = categoryProducts.filter((p) => p.id.toString() !== id.toString());
-  const sliceProducts = relatedProducts.slice(0, 10);
-
-  // ──────────────────────────────────────────────────────────────────────
-  // 🛒 CART & QUANTITY STATE
-  // ──────────────────────────────────────────────────────────────────────
+  // 👇 Swiper states — unchanged
   const [quantity, setQuantity] = useState(1);
-
-  // ──────────────────────────────────────────────────────────────────────
-  // 🖼️ SWIPER STATES
-  // ──────────────────────────────────────────────────────────────────────
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const swiperRef = useRef(null);
-  const relatedSwiperRef = useRef(null);
 
-  // ──────────────────────────────────────────────────────────────────────
-  // 📝 REVIEW STATES
-  // ──────────────────────────────────────────────────────────────────────
-  const [reviews, setReviews] = useState([]);
-  const [reviewsLoading, setReviewsLoading] = useState(true);
-  const [reviewsError, setReviewsError] = useState(false);
-  const [submittingReview, setSubmittingReview] = useState(false);
-  const [showReviewForm, setShowReviewForm] = useState(false);
-  const [review, setReview] = useState({
-    name: "",
-    email: "",
-    rating: 0,
-    comment: "",
-    images: [],
-  });
-
-  // ──────────────────────────────────────────────────────────────────────
-  // 🔄 EFFECT: LOAD REVIEWS WHEN PRODUCT LOADS
-  // ──────────────────────────────────────────────────────────────────────
+  // ✅ FETCH PRODUCT + RELATED PRODUCTS + REVIEWS (ALL FROM API)
   useEffect(() => {
-    const fetchReviews = async () => {
-      setReviewsLoading(true);
-      setReviewsError(false);
+    const fetchProduct = async () => {
       try {
-        // ✅ Use product.id — not product._id (dummy data has "id")
-        const response = await fetch(`${API_URL}/api/review/${product.id}`);
-        if (!response.ok) throw new Error("Failed to fetch reviews");
-        const data = await response.json();
-        setReviews(data);
-      } catch (error) {
-        console.error("Error fetching reviews:", error);
-        setReviewsError(true);
+        setLoading(true);
+        setError(false);
+
+        // 👇 STEP 1: Fetch single product by ID
+        const productRes = await axios.get(`${API_URL}/api/product/${id}`);
+        const productData = productRes.data;
+
+        if (!productData) {
+          throw new Error("Product not found");
+        }
+
+        // 👇 STEP 2: Fetch ALL products for related (same category)
+        const allProductsRes = await axios.get(`${API_URL}/api/product`);
+        const allProducts = allProductsRes.data || [];
+
+        // ✅ Filter related by category — exclude self — limit 10
+        const related = allProducts
+          .filter(p => p.category === productData.category && p._id !== id)
+          .slice(0, 10);
+
+        setRelatedProducts(related);
+        setProduct(productData);
+      } catch (err) {
+        console.error("Error fetching product:", err);
+        setError(true);
       } finally {
-        setReviewsLoading(false);
+        setLoading(false);
       }
     };
 
-    fetchReviews();
-  }, [product.id]); // ✅ product.id — safe to use
+    fetchProduct();
+  }, [id, API_URL]);
+
+  // ✅ LOADING STATE
+  if (loading) {
+    return (
+      <div className="container mx-auto px-6 py-20 text-center">
+        <div className="text-xl">Loading Product Details...</div>
+      </div>
+    );
+  }
+
+  // ✅ ERROR STATE
+  if (error || !product) {
+    return (
+      <div className="container mx-auto px-6 py-20 text-center">
+        <p className="text-red-500 text-xl">Product not found or error occurred.</p>
+        <Link to="/" className="text-blue-500 hover:underline mt-4 inline-block">
+          ← Back to Home
+        </Link>
+      </div>
+    );
+  }
 
   // ──────────────────────────────────────────────────────────────────────
-  // 🎛️ HANDLERS
+  // 🎛️ HANDLERS — UNCHANGED
   // ──────────────────────────────────────────────────────────────────────
-
-  // ➤ Quantity Handler
   const handleQtyChange = (type) => {
     if (type === "inc") {
       setQuantity(Math.min(10, quantity + 1));
@@ -99,65 +102,6 @@ export default function ProductView() {
     }
   };
 
-  // ➤ Review Form Handlers
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setReview((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleRatingChange = (rating) => {
-    setReview((prev) => ({ ...prev, rating }));
-  };
-
-  const toggleReviewForm = () => {
-    setShowReviewForm(!showReviewForm);
-  };
-
-  // ➤ Submit Review
-  const handleSubmitReview = async (e) => {
-    e.preventDefault();
-    if (!review.name.trim()) {
-      toast.error("Please enter your name");
-      return;
-    }
-    if (review.rating === 0) {
-      toast.error("Please select a rating");
-      return;
-    }
-
-    setSubmittingReview(true);
-
-    try {
-      const response = await fetch(`${API_URL}/api/review`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          productId: product.id, // ✅ use product.id
-          name: review.name,
-          email: review.email,
-          rating: review.rating,
-          comment: review.comment,
-        }),
-      });
-
-      if (!response.ok) throw new Error("Failed to submit review");
-
-      const newReview = await response.json();
-      setReviews((prev) => [newReview, ...prev]);
-      setReview({ name: "", email: "", rating: 0, comment: "" });
-      setShowReviewForm(false);
-      toast.success("Review submitted successfully!");
-    } catch (error) {
-      console.error("Error submitting review:", error);
-      toast.error("Failed to submit review. Please try again.");
-    } finally {
-      setSubmittingReview(false);
-    }
-  };
-
-  // ➤ Swiper Navigation
   const handlePrev = () => {
     if (swiperRef.current) swiperRef.current.slidePrev();
   };
@@ -167,27 +111,8 @@ export default function ProductView() {
   };
 
   // ──────────────────────────────────────────────────────────────────────
-  // 🌟 UI HELPERS
+  // 🌟 UI HELPERS — UNCHANGED
   // ──────────────────────────────────────────────────────────────────────
-  const StarRating = ({ rating, onRate }) => {
-    return (
-      <div className="flex items-center space-x-1">
-        {[...Array(5)].map((_, i) => (
-          <button
-            key={i}
-            onClick={() => onRate(i + 1)}
-            className={`text-xl transition ${i < rating ? "text-yellow-400" : "text-gray-300"}`}
-            type="button"
-            aria-label={`Rate ${i + 1} stars`}
-          >
-            ★
-          </button>
-        ))}
-        <span className="text-sm text-gray-500 ml-2">{rating}/5</span>
-      </div>
-    );
-  };
-
   const stockStatus = product.inStock
     ? "Ready to Ship - In Stock"
     : "Out of Stock - Available on Backorder";
@@ -195,14 +120,14 @@ export default function ProductView() {
   const deliveryText = "Estimated Delivery: 4 to 7 days";
 
   // ──────────────────────────────────────────────────────────────────────
-  // 🖥️ RENDER
+  // 🖥️ RENDER — BILKUL TUMHARA — SIRF `product` API WALA HOGAYA
   // ──────────────────────────────────────────────────────────────────────
   return (
     <div className="container mx-auto px-6 py-12">
       <ToastContainer position="top-right" autoClose={3000} />
 
       {/* ────────────────────────────────────────────────────────────────────── */}
-      {/* 🖼️ PRODUCT GALLERY */}
+      {/* 🖼️ PRODUCT GALLERY — PRIMARY IMAGE + GALLERY */}
       {/* ────────────────────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         <div className="relative">
@@ -221,14 +146,27 @@ export default function ProductView() {
             ›
           </button>
 
+          {/* 👇 MAIN SWIPER — PRIMARY IMAGE + GALLERY */}
           <Swiper
             spaceBetween={10}
             thumbs={{ swiper: thumbsSwiper }}
-            modules={[Navigation, Thumbs, Autoplay]}
+            modules={[Navigation, Thumbs, Autoplay]}  
             autoplay={{ delay: 7000, disableOnInteraction: false }}
             onSwiper={(swiper) => (swiperRef.current = swiper)}
             className="rounded-xl shadow-lg"
           >
+            {/* ✅ PRIMARY IMAGE — pehla slide */}
+            <SwiperSlide>
+              <div className="overflow-hidden rounded-xl">
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-full h-[500px] object-cover transform transition-duration-500 hover:scale-110"
+                />
+              </div>
+            </SwiperSlide>
+
+            {/* ✅ GALLERY IMAGES */}
             {product.images?.map((img, index) => (
               <SwiperSlide key={index}>
                 <div className="overflow-hidden rounded-xl">
@@ -242,6 +180,7 @@ export default function ProductView() {
             ))}
           </Swiper>
 
+          {/* 👇 THUMBNAILS — PRIMARY + GALLERY */}
           <Swiper
             onSwiper={setThumbsSwiper}
             spaceBetween={10}
@@ -250,13 +189,25 @@ export default function ProductView() {
             modules={[Thumbs]}
             className="mt-4"
           >
+            {/* ✅ Thumbnail for PRIMARY IMAGE */}
+            <SwiperSlide>
+              <img
+                src={product.image}
+                alt="Main Product"
+                className={`w-full h-28 object-cover border-2 rounded-md cursor-pointer transition hover:opacity-80 ${
+                  thumbsSwiper?.activeIndex === 0 ? "border-yellow-500" : "border-gray-300"
+                }`}
+              />
+            </SwiperSlide>
+
+            {/* ✅ Thumbnails for GALLERY IMAGES */}
             {product.images?.map((img, index) => (
-              <SwiperSlide key={index}>
+              <SwiperSlide key={index + 1}>
                 <img
                   src={img}
                   alt={`Thumbnail ${index + 1}`}
                   className={`w-full h-28 object-cover border-2 rounded-md cursor-pointer transition hover:opacity-80 ${
-                    thumbsSwiper?.activeIndex === index ? "border-yellow-500" : "border-gray-300"
+                    thumbsSwiper?.activeIndex === index + 1 ? "border-yellow-500" : "border-gray-300"
                   }`}
                 />
               </SwiperSlide>
@@ -265,7 +216,7 @@ export default function ProductView() {
         </div>
 
         {/* ────────────────────────────────────────────────────────────────────── */}
-        {/* 🏷️ PRODUCT INFO */}
+        {/* 🏷️ PRODUCT INFO — UNCHANGED */}
         {/* ────────────────────────────────────────────────────────────────────── */}
         <div className="flex flex-col space-y-5">
           <div>
@@ -339,142 +290,14 @@ export default function ProductView() {
       </div>
 
       {/* ────────────────────────────────────────────────────────────────────── */}
-      {/* 💬 CUSTOMER REVIEWS */}
+      {/* 💬 CUSTOMER REVIEWS — REAL DATA FROM product.reviews */}
       {/* ────────────────────────────────────────────────────────────────────── */}
-      <div className="mt-20">
-        <h2 className="text-2xl font-bold mb-6">Customer Reviews</h2>
-
-        {reviewsLoading && <p className="text-gray-500">Loading reviews...</p>}
-        {reviewsError && <p className="text-red-500">Failed to load reviews.</p>}
-
-        <button
-          onClick={toggleReviewForm}
-          className="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition mb-6"
-        >
-          Write a Review
-        </button>
-
-        {showReviewForm && (
-          <form onSubmit={handleSubmitReview} className="bg-white p-6 rounded-lg shadow-md mb-6">
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Your Name *</label>
-              <input
-                type="text"
-                name="name"
-                value={review.name}
-                onChange={handleInputChange}
-                required
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-500"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email (Optional)</label>
-              <input
-                type="email"
-                name="email"
-                value={review.email}
-                onChange={handleInputChange}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-500"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Your rating *</label>
-              <StarRating rating={review.rating} onRate={handleRatingChange} />
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Your review *</label>
-              <textarea
-                name="comment"
-                value={review.comment}
-                onChange={handleInputChange}
-                rows={4}
-                placeholder="Share your experience..."
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-500"
-              ></textarea>
-            </div>
-            <button
-              type="submit"
-              disabled={submittingReview}
-              className={`${submittingReview ? "bg-gray-500" : "bg-gray-800 hover:bg-gray-700"} text-white px-4 py-2 rounded-md transition`}
-            >
-              {submittingReview ? "Submitting..." : "Send Review"}
-            </button>
-          </form>
-        )}
-
-        {reviews.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {reviews.map((r) => (
-              <div
-                key={r._id || r.id} // ✅ fallback for dummy data
-                className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-medium text-gray-800">{r.name}</span>
-                  <span className="text-xs text-gray-500">
-                    {new Date(r.createdAt || Date.now()).toLocaleDateString()}
-                  </span>
-                </div>
-                <div className="flex items-center mb-2">
-                  <StarRating rating={r.rating} onRate={() => {}} />
-                  {r.verified && <span className="text-xs text-green-600 ml-1">Verified</span>}
-                </div>
-                <p className="text-sm text-gray-700 line-clamp-3">{r.comment}</p>
-              </div>
-            ))}
-          </div>
-        ) : (
-          !reviewsLoading && <p className="text-gray-500 italic">No reviews yet. Be the first to write one!</p>
-        )}
-      </div>
+      <ReviewSection product={product} API_URL={API_URL} /> {/* 👈— product._id ki jagah product pass karo — warna reviews nahi dikhega */}
 
       {/* ────────────────────────────────────────────────────────────────────── */}
-      {/* 🔄 RELATED PRODUCTS */}
+      {/* 🔄 RELATED PRODUCTS — REAL DATA FROM API */}
       {/* ────────────────────────────────────────────────────────────────────── */}
-      <div className="mt-20">
-        <h2 className="text-2xl font-bold mb-6">Related Products</h2>
-        <div className="relative">
-          <button
-            type="button"
-            className="absolute -top-16 right-10 z-10 w-12 h-12 flex items-center justify-center bg-white text-black text-xl rounded-lg shadow-md cursor-pointer hover:bg-yellow-500 hover:text-white transition border border-yellow-400"
-            onClick={() => {
-              if (relatedSwiperRef.current) relatedSwiperRef.current.slidePrev();
-            }}
-          >
-            ‹
-          </button>
-          <button
-            type="button"
-            className="absolute -top-16 -right-3 border border-yellow-400 z-10 w-12 h-12 flex items-center justify-center bg-white text-black text-xl rounded-lg shadow-md cursor-pointer hover:bg-yellow-500 hover:text-white transition"
-            onClick={() => {
-              if (relatedSwiperRef.current) relatedSwiperRef.current.slideNext();
-            }}
-          >
-            ›
-          </button>
-
-          <Swiper
-            onSwiper={(swiper) => (relatedSwiperRef.current = swiper)}
-            slidesPerView={3}
-            spaceBetween={10}
-            breakpoints={{
-              320: { slidesPerView: 1 },
-              640: { slidesPerView: 2 },
-              768: { slidesPerView: 3 },
-              1024: { slidesPerView: 4 },
-            }}
-            modules={[Navigation, Autoplay]}
-            autoplay={{ delay: 2000, disableOnInteraction: false }}
-            className="py-4"
-          >
-            {sliceProducts.map((item) => (
-              <SwiperSlide key={item.id}>
-                <ProductCard product={item} currentCategory={category} />
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        </div>
-      </div>
+      <RelatedProductsSection sliceProducts={relatedProducts} category={category} />
     </div>
   );
 }

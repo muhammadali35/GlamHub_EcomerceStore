@@ -281,7 +281,7 @@ let products = productsData.filter(
                     .slice(0, hasActiveFilter ? undefined : visibleProducts)
                     .map((product) => (
                       <ProductCard
-                        key={product.id}
+                       key={product._id}
                         product={product}
                         currentCategory={currentCategory}
                       />

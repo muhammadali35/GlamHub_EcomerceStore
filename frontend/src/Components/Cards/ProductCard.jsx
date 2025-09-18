@@ -9,9 +9,9 @@ export default function ProductCard({ product, currentCategory }) {
 
   // Check if product is already favorite (on mount and when favorites update)
   useEffect(() => {
-    const favExist = favorites.some((fav) => fav.id === product.id);
+    const favExist = favorites.some((fav) => fav._id === product._id);
     setIsFav(favExist);
-  }, [favorites, product.id]);
+  }, [favorites, product._id]);
 
   return (
     <div className="bg-white rounded-2xl overflow-hidden group relative hover:shadow-2xl transition">
@@ -47,7 +47,7 @@ export default function ProductCard({ product, currentCategory }) {
         </button>
 
         {/* View Button (below favorite, visible only on hover) */}
-        <Link to={`/product/${currentCategory}/${product.id}`}>
+        <Link to={`/product/${currentCategory}/${product._id}`}>
           <button className="absolute top-14 right-3 bg-white text-black p-2 rounded-full shadow opacity-0 group-hover:opacity-100 transition duration-500 hover:bg-black hover:text-white">
             👁
           </button>
