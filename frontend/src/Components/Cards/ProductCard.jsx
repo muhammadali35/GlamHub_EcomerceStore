@@ -9,22 +9,27 @@ export default function ProductCard({ product, currentCategory }) {
 
   // Check if product is already favorite (on mount and when favorites update)
   useEffect(() => {
-    const favExist = favorites.some((fav) => fav.id === product.id);
+    const favExist = favorites.some((fav) => fav._id === product._id);
     setIsFav(favExist);
-  }, [favorites, product.id]);
+  }, [favorites, product._id]);
 
   return (
     <div className="bg-white rounded-2xl overflow-hidden group relative hover:shadow-2xl transition">
       {/* Image Section */}
       <div className="relative overflow-hidden bg-gray-100">
-        {/* Wrap only image with Link */}
-        <Link to={`/product/${currentCategory}/${product.id}`}>
-          <img
-            src={product.img}
-            alt={product.name}
-            className="w-full h-80 object-cover transform group-hover:scale-110 transition duration-500"
-          />
-        </Link>
+      
+       <Link to={`/product/${currentCategory}/${product._id}`}>
+  <img
+    src={
+      product.image?.startsWith("http")
+        ? product.image
+        : `http://localhost:5000/uploads/${product.image}`
+    }
+    alt={product.name}
+    className="w-full h-80 object-cover transform group-hover:scale-110 transition duration-500"
+  />
+</Link>
+
 
         {/* Dark overlay on hover (pointer-events-none so it won't block clicks) */}
         <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition duration-500 pointer-events-none"></div>
@@ -42,7 +47,7 @@ export default function ProductCard({ product, currentCategory }) {
         </button>
 
         {/* View Button (below favorite, visible only on hover) */}
-        <Link to={`/product/${currentCategory}/${product.id}`}>
+        <Link to={`/product/${currentCategory}/${product._id}`}>
           <button className="absolute top-14 right-3 bg-white text-black p-2 rounded-full shadow opacity-0 group-hover:opacity-100 transition duration-500 hover:bg-black hover:text-white">
             👁
           </button>

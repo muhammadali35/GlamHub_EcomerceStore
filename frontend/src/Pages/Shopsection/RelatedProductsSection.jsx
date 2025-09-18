@@ -47,8 +47,8 @@ export default function RelatedProductsSection({ sliceProducts, category }) {
           className="py-4"
         >
           {sliceProducts.map((item) => (
-            <SwiperSlide key={item.id}>
-              <ProductCard product={item} currentCategory={category} />
+            <SwiperSlide key={item._id}>
+              <ProductCard key={item._id}  product={item} currentCategory={category} />
             </SwiperSlide>
           ))}
         </Swiper>

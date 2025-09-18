@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
@@ -7,9 +7,10 @@ import "swiper/css/pagination";
 
 import { ChevronLeft, ChevronRight } from "lucide-react"; // 👈 icons
 import ProductCard from "../../Components/Cards/ProductCard";
-import { productsData } from "../../Components/DumyProducts";
+// import { productsData } from "../../Components/DumyProducts";
 
 const NewArrivel = () => {
+   const [productsData,setProductsData]=useState([])
   const swiperRef = useRef(null);
 
   // Custom navigation handlers
@@ -23,13 +24,24 @@ const NewArrivel = () => {
       swiperRef.current.slideNext();
     }
   };
-  // Extract only new arrival products from all categories
-  const newArrivalProducts = [
-    ...productsData.cosmetics.filter((p) => p.newarrival),
-    ...productsData["mobile-accessories"].filter((p) => p.newarrival),
-    ...productsData["kitchen-accessories"].filter((p) => p.newarrival),
-  ];
 
+
+          async function getNewProducts () {
+                let response= await fetch("http://localhost:5000/api/product",{
+                 method:"GET"
+                })
+                 let data= await response.json()
+                 if (response.ok) {
+                    setProductsData(data)
+                 }
+              }
+             useEffect(()=>{
+                getNewProducts()
+             },[productsData])
+
+  const newArrivalProducts = productsData.filter((item)=>item.newarrival)
+   
+ 
   return (
     <section className="py-16 bg-white relative">
       <div className="container mx-auto px-6 md:px-10 lg:px-20">

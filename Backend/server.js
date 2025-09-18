@@ -1,16 +1,13 @@
 import express from "express";
 import mongoose from "mongoose";
 import productRoutes from "./routes/productRoute.js";
-
 import TestimonialRouter from "./routes/testimonialRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js"; // ✅ .js extension required in import
 
 
-
 import dotenv from "dotenv";  
 import cors from "cors";
-
 
 
 dotenv.config();

@@ -34,7 +34,7 @@ const Cart = () => {
     <>
       <FrontBanner title="🛒 Your Cart" />
 
-      <div className="container mx-auto px-4 py-8 md:px-6 lg:px-8">
+    <div className="container mx-auto px-4 py-8 md:px-6 lg:px-8">
         {cart.length === 0 ? (
           /* ──────────────────────────────── */
           /* 🛒 EMPTY CART — PREMIUM STYLE */

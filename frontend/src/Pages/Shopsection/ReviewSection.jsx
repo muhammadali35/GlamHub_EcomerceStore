@@ -23,7 +23,7 @@ export default function ReviewSection({ product, API_URL }) {
       setReviewsLoading(true);
       setReviewsError(false);
       try {
-        const response = await fetch(`${API_URL}/api/review/${product.id}`);
+        const response = await fetch(`${API_URL}/api/review/${product._id}`);
         if (!response.ok) throw new Error("Failed to fetch reviews");
         const data = await response.json();
         setReviews(data);
@@ -74,7 +74,7 @@ export default function ReviewSection({ product, API_URL }) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          productId: product.id,
+          productId: product._id,
           name: review.name,
           email: review.email,
           rating: review.rating,

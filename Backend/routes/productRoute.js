@@ -12,10 +12,26 @@ const router = express.Router();
 
 
 // ✅ CREATE — Single image (thumbnail)
-router.post("/product", uploadFiles.single("image"), createProduct);
+// Single + multiple images
+router.post(
+  "/product",
+  uploadFiles.fields([
+    { name: "image", maxCount: 1 },    // primary image
+    { name: "images", maxCount: 5 },   // extra images
+  ]),
+  createProduct
+);
 
-// ✅ UPDATE — Multiple images (gallery)
-router.put("/product/:id", uploadFiles.array("images", 5), updateProduct);
+// Update bhi isi tarah
+router.put(
+  "/product/:id",
+  uploadFiles.fields([
+    { name: "image", maxCount: 1 },
+    { name: "images", maxCount: 5 },
+  ]),
+  updateProduct
+);
+
 
 // ✅ GET & DELETE — no file upload
 router.get("/product", getAllProducts);

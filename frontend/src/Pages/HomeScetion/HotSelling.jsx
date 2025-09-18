@@ -1,14 +1,27 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ProductCard from "../../Components/Cards/ProductCard";
 import { Link } from "react-router-dom";
-import { productsData } from "../../Components/DumyProducts";
+// import { productsData } from "../../Components/DumyProducts";
 
 const HotSelling = () => {
-  const hotSellingProducts = [
-    ...productsData.cosmetics.filter((product) => product.hotsale),
-    ...productsData["mobile-accessories"].filter((product) => product.hotsale),
-    ...productsData["kitchen-accessories"].filter((product) => product.hotsale),
-  ];
+
+  const [productsData,setProductsData]=useState([])
+
+          async function getHotProducts () {
+                let response= await fetch("http://localhost:5000/api/product",{
+                 method:"GET"
+                })
+                 let data= await response.json()
+                 if (response.ok) {
+                    setProductsData(data)
+                 }
+              }
+             useEffect(()=>{
+                getHotProducts()
+             },[productsData])
+
+  // ✅ FIX: productsData is ARRAY — not object — so filter directly
+  const hotSellingProducts = productsData.filter(product => product.hotsale);
 
   const sliecedProducts1 = hotSellingProducts.slice(2, 4);
   const sliecedProducts2 = hotSellingProducts.slice(4, 6);
@@ -44,7 +57,7 @@ const HotSelling = () => {
                 </p>
 
                 <Link
-                  to={`/product/${firstProducts.category}/${firstProducts.id}`}
+                  to={`/product/${firstProducts.category}/${firstProducts._id}`}
                 >
                   <button className="px-6 md:px-8 py-2 bg-black text-white rounded-full font-medium shadow hover:bg-gray-800 transition">
                     SHOP NOW
@@ -55,7 +68,7 @@ const HotSelling = () => {
               {/* Right Side Image */}
               <div className="flex-1 flex items-center justify-center">
                 <img
-                  src={firstProducts.img}
+                  src={firstProducts.image}
                   alt={firstProducts.name}
                   className="max-h-[180px] md:max-h-[250px] object-contain rounded-full"
                 />
@@ -68,7 +81,6 @@ const HotSelling = () => {
             {sliecedProducts1.map((product) => (
               <div
                 key={product.id}
-            
                 className="w-full sm:w-[250px] md:w-[280px] h-auto cursor-pointer mx-auto"
               >
                 <ProductCard product={product}   currentCategory={product.category}/>
@@ -107,7 +119,7 @@ const HotSelling = () => {
                 </p>
 
                 <Link
-                  to={`/product/${secondProducts.category}/${secondProducts.id}`}
+                  to={`/product/${secondProducts.category}/${secondProducts._id}`}
                 >
                   <button className="mt-6 px-6 md:px-8 py-2 bg-black text-white rounded-full font-medium hover:bg-gray-800 transition">
                     SHOP NOW
@@ -118,7 +130,7 @@ const HotSelling = () => {
               {/* Right Side Image */}
               <div className="flex-1 flex items-center justify-center mt-6 md:mt-0">
                 <img
-                  src={secondProducts.img}
+                  src={secondProducts.image}
                   alt={secondProducts.name}
                   className="max-h-[200px] md:max-h-[260px] w-auto object-contain"
                 />
