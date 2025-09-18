@@ -13,28 +13,20 @@ import "swiper/css/navigation";
 const categories = [
   {
     name: "Cosmetics",
-    products: 12,
     image: cosmatic,
     link: "/shop/cosmetics",
   },
   {
     name: "Mobile Accessories",
-    products: 8,
     image: mobile,
     link: "/shop/mobile-accessories",
   },
   {
     name: "Kitchen Accessories",
-    products: 10,
     image: Kitchen,
     link: "/shop/kitchen-accessories",
   },
-  {
-    name: "Kitchen Accessories",
-    products: 10,
-    image: Kitchen,
-    link: "/shop/kitchen-accessories",
-  },
+
 ];
 
 
@@ -56,14 +48,21 @@ function Categories() {
   return (
     <section className="py-20 bg-white text-black">
       <div className="container mx-auto px-6 md:px-10 lg:px-20">
-        {/* Heading */}
-        <div className="flex items-center justify-between mb-10">
-          <h2 className="text-3xl md:text-4xl font-light text-[#111111]">
-            <span className="font-extrabold text-brand-gold">Glamub</span> is a
-            brand of <span className="font-bold">cosmetics</span>, also offering
-            a wide range of <span className="font-bold">kitchen</span> and{" "}
-            <span className="font-bold">mobile</span> accessories.
+         {/* Floating Decor Circles */}
+      <div className="absolute -top-32 -right-32 w-96 h-96 bg-yellow-200 rounded-full opacity-20 blur-3xl"></div>
+      <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-gray-300 rounded-full opacity-10 blur-3xl"></div>
+     
+      </div>
+
+      <div className="container mx-auto px-6 md:px-10 lg:px-20 relative z-10">
+        {/* Heading — Premium Typography */}
+        <div className="text-center mb-16 max-w-4xl mx-auto">
+          <h2 className="text-3xl md:text-5xl font-light text-gray-900 leading-tight">
+            Discover the <span className="font-extrabold bg-gradient-to-r from-yellow-500 to-yellow-600 bg-clip-text text-transparent">GlamHub</span> Collection
           </h2>
+          <p className="text-gray-600 mt-4 text-lg max-w-3xl mx-auto">
+            Explore premium <span className="font-bold">cosmetics</span>, innovative <span className="font-bold">kitchen</span> essentials, and stylish <span className="font-bold">mobile</span> accessories — all in one place.
+          </p>
         </div>
 
         {/* Swiper Slider */}
@@ -78,6 +77,7 @@ function Categories() {
               640: { slidesPerView: 2 },
               1024: { slidesPerView: 3 },
             }}
+           
             className="relative"
           >
             {categories.map((cat, idx) => (

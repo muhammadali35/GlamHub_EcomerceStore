@@ -10,6 +10,7 @@ import Checkout from "./Pages/CartSection/Checkout";
 import ScrollToTop from "./Components/ScrollToTop";
 import Footer from "./Components/Layout/Footer";
 import WhatsAppButton from "./Components/WhatsAppButton";
+import Payment from "./Pages/CartSection/Payment";
 function App() {
   return (
     <>
@@ -26,6 +27,8 @@ function App() {
         <Route path="/cart" element={<Cart />} />
         <Route path="/favorites" element={<Favorites />} />
         <Route path="/checkout" element={<Checkout />} />
+        <Route path="/payment" element={<Payment />} />
+
       </Routes>
         <WhatsAppButton />
        <Footer />
