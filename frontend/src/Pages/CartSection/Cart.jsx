@@ -82,7 +82,7 @@ const Cart = () => {
                     {/* Product Image */}
                     <div className="md:w-48 h-48 md:h-auto flex-shrink-0 relative overflow-hidden">
                       <img
-                        src={item.img}
+                        src={item.image}
                         alt={item.name}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />

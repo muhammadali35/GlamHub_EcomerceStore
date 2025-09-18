@@ -61,13 +61,17 @@ const Payment = () => {
         method: "POST",
         body: formData,
       });
-      
+
       const data = await response.json();
       console.log("server response", data);
 
-       
-    localStorage.removeItem("cart");
-    setCart([]); // <-- Add this line to clear React cart state
+
+      localStorage.removeItem("cart");
+      setCart([]); // <-- Add this line to clear React cart state
+
+      // ✅ Clear customer info also
+      localStorage.removeItem("customerInfo");
+
 
       if (!response.ok) throw new Error(data.error || "Submission failed");
 

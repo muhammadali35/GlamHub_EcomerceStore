@@ -253,7 +253,7 @@ export default function ProductView() {
               <>
               <button
   onClick={() => addToCart(product, quantity)}
-  className="flex-1 whitespace-nowrap bg-brand-gold text-white px-7 py-3 md:px-6 md:py-3 rounded-md shadow hover:bg-black transition"
+  className="flex-1 whitespace-nowrap bg-brand-gold text-white px-7 md:px-6 md:py-3 rounded-md shadow hover:bg-black transition"
 >
   ADD TO CART
 </button>
@@ -261,7 +261,7 @@ export default function ProductView() {
                 <Link
                   onClick={() => addToCart(product, quantity)}
                   to="/checkout"
-                  className="flex-1 bg-gray-800 text-white px-7 py-3 text-nowrap  md:px-6 md:py-3 rounded-md shadow hover:bg-gray-700 transition text-center"
+                  className="flex-1 bg-gray-800 text-white px-6 py-3 rounded-md shadow hover:bg-gray-700 transition text-center"
                 >
                   BUY NOW
                 </Link>
