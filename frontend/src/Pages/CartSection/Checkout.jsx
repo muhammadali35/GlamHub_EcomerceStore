@@ -22,10 +22,12 @@ const Checkout = () => {
 
   const SHIPPING_FEE = 150;
   const subtotal = cart.reduce(
-    (acc, item) => acc + item.price * (quantities[item.id] || 1),
+    (acc, item) => acc + item.price * (quantities[item._id] || 1),
     0
   );
   const total = subtotal + SHIPPING_FEE;
+  console.log(total);
+  
 
   // ✅ initialize form from context (persist)
   const [form, setForm] = useState(
@@ -281,27 +283,27 @@ const Checkout = () => {
                       <p className="font-semibold text-gray-800 text-base">{item.name}</p>
                       <div className="flex items-center mt-3 space-x-3">
                         <button
-                          onClick={() => decreaseQuantity(item.id)}
+                          onClick={() => decreaseQuantity(item._id)}
                           className="w-8 h-8 flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded-full transition text-base font-bold"
                         >
                           −
                         </button>
                         <span className="text-base font-semibold w-8 text-center">
-                          {quantities[item.id] || 1}
+                          {quantities[item._id] || 1}
                         </span>
                         <button
                           onClick={() => {
-                            if ((quantities[item.id] || 1) < 10) increaseQuantity(item.id);
+                            if ((quantities[item._id] || 1) < 10) increaseQuantity(item._id);
                           }}
                           className="w-8 h-8 flex items-center justify-center bg-gray-200 hover:bg-gray-300 rounded-full transition text-base font-bold"
-                          disabled={(quantities[item.id] || 1) >= 10}
+                          disabled={(quantities[item._id] || 1) >= 10}
                         >
                           +
                         </button>
                       </div>
                     </div>
                     <span className="font-semibold text-gray-800 ml-4">
-                      Rs. {(item.price * (quantities[item.id] || 1)).toFixed(0)}
+                      Rs. {(item.price * (quantities[item._id] || 1)).toFixed(0)}
                     </span>
                   </div>
                 </div>

@@ -97,7 +97,6 @@ const removeFromCart = (_id) => {
         decreaseQuantity,
         toggleFavorite,
         setQuantities,
-        quantities,
         checkoutForm,
         setCheckoutForm,
       }}
