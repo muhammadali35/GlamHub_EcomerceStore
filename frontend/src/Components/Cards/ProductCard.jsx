@@ -7,6 +7,9 @@ export default function ProductCard({ product, currentCategory }) {
   const { addToCart, toggleFavorite, favorites } = useShop();
   const [isFav, setIsFav] = useState(false);
 
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+
   // Check if product is already favorite (on mount and when favorites update)
   useEffect(() => {
     const favExist = favorites.some((fav) => fav._id === product._id);
@@ -23,7 +26,7 @@ export default function ProductCard({ product, currentCategory }) {
     src={
       product.image?.startsWith("http")
         ? product.image
-        : `http://localhost:5000/uploads/${product.image}`
+        : `${API_URL}/uploads/${product.image}`
     }
     alt={product.name}
     className="w-full h-80 object-cover transform group-hover:scale-110 transition duration-500"

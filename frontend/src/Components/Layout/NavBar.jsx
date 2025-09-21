@@ -53,7 +53,6 @@ function Navbar() {
   }, [isMobileMenuOpen]);
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
-
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
   // Active link helper
@@ -62,8 +61,8 @@ function Navbar() {
   return (
     <nav className="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Flex wrapper fix for tablet screens */}
         <div className="flex items-center justify-between h-16 md:h-20">
-
           {/* ─── LOGO ───────────────────────────────────────────────────── */}
           <div className="flex items-center">
             <Link to="/" onClick={closeMobileMenu} className="flex items-center group">
@@ -82,7 +81,7 @@ function Navbar() {
           </div>
 
           {/* ─── DESKTOP NAV ────────────────────────────────────────────── */}
-          <div className="hidden md:flex items-center space-x-2">
+          <div className="hidden md:flex flex-1 justify-center items-center space-x-2">
             {[
               { to: "/", label: "HOME" },
               { to: "/shop/cosmetics", label: "Cosmetics" },
@@ -163,7 +162,7 @@ function Navbar() {
           </div>
         </div>
 
-        {/* ─── MOBILE MENU — SLIDE IN FROM RIGHT + STAGGERED ANIMATIONS ─── */}
+        {/* ─── MOBILE MENU ─────────────────────────────────────────────── */}
         {isMobileMenuOpen && (
           <>
             {/* Backdrop */}
@@ -186,7 +185,7 @@ function Navbar() {
                 </button>
               </div>
 
-              {/* Links with Staggered Animation */}
+              {/* Links */}
               <div className="p-4">
                 {[
                   { to: "/", label: "🏠 HOME" },
@@ -215,7 +214,7 @@ function Navbar() {
                 ))}
               </div>
 
-              {/* Bottom CTA — Optional but nice */}
+              {/* Bottom CTA */}
               <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-gray-100 bg-gray-50">
                 <Link
                   to="/cart"

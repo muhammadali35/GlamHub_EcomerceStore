@@ -20,6 +20,8 @@ const Checkout = () => {
 
   const navigate = useNavigate();
 
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
   const SHIPPING_FEE = 150;
   const subtotal = cart.reduce(
     (acc, item) => acc + item.price * (quantities[item._id] || 1),
@@ -89,7 +91,7 @@ const Checkout = () => {
       fd.append("paymentMethod", paymentMethodSelected);
       fd.append("totalAmount", total);
 
-      const res = await fetch("http://localhost:5000/api/orders", {
+      const res = await fetch(`${API_URL}/api/orders`, {
         method: "POST",
         body: fd,
       });

@@ -41,7 +41,7 @@ export default function Shop() {
 
      async function getAllProducts () {
 
-       let response= await fetch("http://localhost:5000/api/product",{
+       let response= await fetch(`${API_URL}/api/product`,{
         method:"GET"
        })
         let data= await response.json()

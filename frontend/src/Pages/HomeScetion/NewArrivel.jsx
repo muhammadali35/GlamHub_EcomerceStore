@@ -13,6 +13,9 @@ const NewArrivel = () => {
    const [productsData,setProductsData]=useState([])
   const swiperRef = useRef(null);
 
+  const API_URL=import.meta.env.VITE_API_URL
+
+
   // Custom navigation handlers
   const handlePrev = () => {
     if (swiperRef.current) {
@@ -27,7 +30,7 @@ const NewArrivel = () => {
 
 
           async function getNewProducts () {
-                let response= await fetch("http://localhost:5000/api/product",{
+                let response= await fetch(`${API_URL}/api/product`,{
                  method:"GET"
                 })
                  let data= await response.json()
