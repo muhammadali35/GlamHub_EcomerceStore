@@ -31,6 +31,9 @@ export default function ProductView() {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const swiperRef = useRef(null);
 
+  // 👇 New State for Cart Button Toggle
+  const [addedToCart, setAddedToCart] = useState(false);
+
   // ✅ FETCH PRODUCT + RELATED PRODUCTS
   useEffect(() => {
     const fetchProduct = async () => {
@@ -251,12 +254,24 @@ export default function ProductView() {
           <div className="flex space-x-3 mt-6">
             {product.inStock ? (
               <>
-              <button
-  onClick={() => addToCart(product, quantity)}
-  className="flex-1 whitespace-nowrap bg-brand-gold text-white px-7 md:px-6 md:py-3 rounded-md shadow hover:bg-black transition"
->
-  ADD TO CART
-</button>
+                {addedToCart ? (
+                  <Link
+                    to="/cart"
+                    className="flex-1 bg-green-600 text-white px-7 md:px-6 md:py-3 rounded-md shadow hover:bg-black transition text-center"
+                  >
+                    VIEW CART
+                  </Link>
+                ) : (
+                  <button
+                    onClick={() => {
+                      addToCart(product, quantity);
+                      setAddedToCart(true);
+                    }}
+                    className="flex-1 whitespace-nowrap bg-brand-gold text-white px-7 md:px-6 md:py-3 rounded-md shadow hover:bg-black transition"
+                  >
+                    ADD TO CART
+                  </button>
+                )}
 
                 <Link
                   onClick={() => addToCart(product, quantity)}
