@@ -1,9 +1,17 @@
-import Order from "../models/Order.js"; 
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const nodemailer = require('nodemailer');
+import Order from "../models/Order.js";
+import { emitNewOrder } from "../server.js";
+
+console.log("✅ Nodemailer Loaded:", !!nodemailer);
+console.log("✅ createTransporter is Function:", typeof nodemailer.createTransporter === 'function');
+console.log("✅ Nodemailer Version:", nodemailer.version);
 
 export const submitOrder = async (req, res) => {
   try {
-     console.log("Incoming order data:", req.body);
-   
+    console.log("Incoming order data:", req.body);
+
 
     const { cart, quantities, customerInfo, paymentMethod, orderId } = req.body;
 
@@ -33,9 +41,9 @@ export const submitOrder = async (req, res) => {
     const finalQuantities = hasQuantities
       ? parsedQuantities
       : parsedCart.reduce((acc, item) => {
-          acc[item.id] = 1;
-          return acc;
-        }, {});
+        acc[item.id] = 1;
+        return acc;
+      }, {});
 
     // Calculate total (safe guards if price missing)
     const totalAmount = parsedCart.reduce((sum, item) => {
@@ -44,7 +52,7 @@ export const submitOrder = async (req, res) => {
       return sum + price * qty;
     }, 0);
 
-  
+
     const newOrder = new Order({
       orderId: orderId || `ORDER-${Date.now()}`,
       paymentMethod,
@@ -59,6 +67,67 @@ export const submitOrder = async (req, res) => {
     await newOrder.save();
 
     console.log("✅ New Order Created:", newOrder.orderId);
+
+    // ✅ 🚨 REAL-TIME NOTIFICATION FOR ADMIN — ye block add karo
+    emitNewOrder({
+      id: newOrder._id,
+      orderId: newOrder.orderId,
+      customer: parsedCustomerInfo.name || "Unknown Customer",
+      phone: parsedCustomerInfo.phone || "N/A",
+      total: totalAmount,
+      paymentMethod: paymentMethod,
+      timestamp: new Date()
+    });
+
+    console.log("✅ New Order Created:", newOrder.orderId);
+
+
+// ✅ Email — ab 100% kaam karega
+try {
+  const nodemailer = await import('nodemailer'); // ✅ Dynamic Import — ES Module compatible
+  // ✅ Correct
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'walihaiderjalali1407@gmail.com',
+      pass: 'ukiy xofl qfvy uoaz' // ✅ App Password
+    }
+  });
+
+  const mailOptions = {
+    from: '"GlamHub Orders" <walihaiderjalali1407@gmail.com>',
+    to: 'walihaiderjalali1407@gmail.com',
+    subject: `🚨 New Order #${newOrder.orderId} — Rs.${totalAmount}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #f9f9f9; border: 1px solid #e0e0e0; border-radius: 10px;">
+        <h3 style="color: #4f46e5; text-align: center;">🛍️ New Order Received</h3>
+        <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+          <p><strong>📅 Order ID:</strong> ${newOrder.orderId}</p>
+          <p><strong>📞 Phone:</strong> ${parsedCustomerInfo.phone || "N/A"}</p>
+          <p><strong>🏠 Address:</strong> ${parsedCustomerInfo.address || "N/A"}, ${parsedCustomerInfo.city || "N/A"}</p>
+          <p><strong>💳 Payment Method:</strong> ${paymentMethod}</p>
+          <p><strong>🕒 Time:</strong> ${new Date().toLocaleString()}</p>
+        </div>
+        <p style="text-align: center; color: #6b7280; font-size: 14px;">
+          Login to admin panel to manage this order.
+        </p>
+      </div>
+    `
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error('❌ Email Error:', error);
+    } else {
+      console.log('✅ Email Sent:', info.response);
+    }
+  });
+
+} catch (emailError) {
+  console.error('❌ Failed to load nodemailer:', emailError);
+}
+
+
 
     res.status(201).json({
       success: true,
