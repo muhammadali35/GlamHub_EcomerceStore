@@ -7,6 +7,8 @@ export default function ProductCard({ product, currentCategory }) {
   const { addToCart, toggleFavorite, favorites } = useShop();
   const [isFav, setIsFav] = useState(false);
 
+   const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
   // Check if product is already favorite (on mount and when favorites update)
   useEffect(() => {
     const favExist = favorites.some((fav) => fav._id === product._id);
@@ -17,20 +19,18 @@ export default function ProductCard({ product, currentCategory }) {
     <div className="bg-white rounded-2xl overflow-hidden group relative hover:shadow-2xl transition">
       {/* Image Section */}
       <div className="relative overflow-hidden bg-gray-100">
-      
-       <Link to={`/product/${currentCategory}/${product._id}`}>
-  <img
-    src={
-      product.image?.startsWith("http")
-        ? product.image
-        : `http://localhost:5000/uploads/${product.image}`
-    }
-    alt={product.name}
-    className="w-full h-80 object-cover transform group-hover:scale-110 transition duration-500"
-  />
-</Link>
 
-
+        <Link to={`/product/${currentCategory}/${product._id}`}>
+          <img
+            src={
+              product.image?.startsWith("http")
+                ? product.image
+                : `${API_BASE_URL}/uploads/${product.image}`
+            }
+            alt={product.name}
+            className="w-full h-80 object-cover transform group-hover:scale-110 transition duration-500"
+          />
+        </Link>
         {/* Dark overlay on hover (pointer-events-none so it won't block clicks) */}
         <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition duration-500 pointer-events-none"></div>
 

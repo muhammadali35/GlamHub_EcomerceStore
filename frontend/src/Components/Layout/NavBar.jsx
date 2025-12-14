@@ -70,13 +70,13 @@ function Navbar() {
               <div className="relative">
                 <img
                   src={logo}
-                  alt="GlumHub Logo"
+                  alt="GlamHub Logo"
                   className="w-10 h-10 md:w-12 md:h-12 object-contain rounded-lg shadow-sm border border-yellow-200 transition-transform duration-500 group-hover:rotate-12 group-hover:scale-110"
                 />
                 <div className="absolute -inset-1 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-lg blur opacity-20 group-hover:opacity-100 transition-opacity duration-500 -z-10"></div>
               </div>
               <span className="ml-2 md:ml-3 text-xl md:text-2xl font-extrabold bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-600 bg-clip-text text-transparent tracking-tight group-hover:scale-105 transition-transform duration-300">
-                GlumHub
+                GlamHub
               </span>
             </Link>
           </div>
@@ -84,7 +84,7 @@ function Navbar() {
           {/* ─── DESKTOP NAV ────────────────────────────────────────────── */}
           <div className="hidden md:flex items-center space-x-2">
             {[
-              { to: "/", label: "HOME" },
+              { to: "/", label: "Home" },
               { to: "/shop/cosmetics", label: "Cosmetics" },
               { to: "/shop/mobile-accessories", label: "Mobile Accessories" },
               { to: "/shop/kitchen-accessories", label: "Kitchen Accessories" },

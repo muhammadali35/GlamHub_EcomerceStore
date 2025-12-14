@@ -1,5 +1,5 @@
-// src/components/ProductView/ReviewSection.jsx (ya apni pasand ki path)
-import { useState } from "react";
+// src/components/ProductView/ReviewSection.jsx
+import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 
 export default function ReviewSection({ product, API_URL }) {
@@ -15,10 +15,10 @@ export default function ReviewSection({ product, API_URL }) {
     comment: "",
   });
 
-  // ──────────────────────────────────────────────────────────────────────
-  // 🔄 EFFECT: LOAD REVIEWS WHEN PRODUCT LOADS
-  // ──────────────────────────────────────────────────────────────────────
-  useState(() => {
+  // 🔁 FIX: useState → useEffect
+  useEffect(() => {
+    if (!product?._id) return;
+
     const fetchReviews = async () => {
       setReviewsLoading(true);
       setReviewsError(false);
@@ -26,7 +26,7 @@ export default function ReviewSection({ product, API_URL }) {
         const response = await fetch(`${API_URL}/api/review/${product._id}`);
         if (!response.ok) throw new Error("Failed to fetch reviews");
         const data = await response.json();
-        setReviews(data);
+        setReviews(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Error fetching reviews:", error);
         setReviewsError(true);
@@ -36,7 +36,7 @@ export default function ReviewSection({ product, API_URL }) {
     };
 
     fetchReviews();
-  }, [product.id]);
+  }, [product?._id]); // ✅ Fixed: depends on product._id, not product.id
 
   // ──────────────────────────────────────────────────────────────────────
   // 🎛️ HANDLERS
@@ -100,16 +100,19 @@ export default function ReviewSection({ product, API_URL }) {
   // ──────────────────────────────────────────────────────────────────────
   // 🌟 UI HELPERS
   // ──────────────────────────────────────────────────────────────────────
-  const StarRating = ({ rating, onRate }) => {
+  const StarRating = ({ rating, onRate, interactive = true }) => {
     return (
       <div className="flex items-center space-x-1">
         {[...Array(5)].map((_, i) => (
           <button
             key={i}
-            onClick={() => onRate(i + 1)}
-            className={`text-xl transition ${i < rating ? "text-yellow-400" : "text-gray-300"}`}
+            onClick={interactive ? () => onRate(i + 1) : undefined}
+            disabled={!interactive}
+            className={`text-xl transition ${
+              i < rating ? "text-yellow-400" : "text-gray-300"
+            } ${interactive ? "cursor-pointer hover:scale-110" : "cursor-default"}`}
             type="button"
-            aria-label={`Rate ${i + 1} stars`}
+            aria-label={`${interactive ? "Rate" : "Rating"} ${i + 1} stars`}
           >
             ★
           </button>
@@ -119,12 +122,38 @@ export default function ReviewSection({ product, API_URL }) {
     );
   };
 
+  // ✅ SKELETON REVIEW CARD
+  const ReviewSkeleton = () => (
+    <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 animate-pulse">
+      <div className="flex items-center justify-between mb-3">
+        <div className="h-4 bg-gray-200 rounded w-1/3"></div>
+        <div className="h-3 bg-gray-200 rounded w-1/6"></div>
+      </div>
+      <div className="h-5 bg-gray-200 rounded w-1/2 mb-3"></div>
+      <div className="space-y-2">
+        <div className="h-3 bg-gray-200 rounded w-full"></div>
+        <div className="h-3 bg-gray-200 rounded w-5/6"></div>
+        <div className="h-3 bg-gray-200 rounded w-4/6"></div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="mt-20">
       <h2 className="text-2xl font-bold mb-6">Customer Reviews</h2>
 
-      {reviewsLoading && <p className="text-gray-500">Loading reviews...</p>}
-      {reviewsError && <p className="text-red-500">Failed to load reviews.</p>}
+      {/* ✅ SKELETON LOADING STATE — CARD-BASED */}
+      {reviewsLoading && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {[...Array(4)].map((_, i) => (
+            <ReviewSkeleton key={i} />
+          ))}
+        </div>
+      )}
+
+      {!reviewsLoading && reviewsError && (
+        <p className="text-red-500">Failed to load reviews.</p>
+      )}
 
       <button
         onClick={toggleReviewForm}
@@ -158,7 +187,7 @@ export default function ReviewSection({ product, API_URL }) {
           </div>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">Your rating *</label>
-            <StarRating rating={review.rating} onRate={handleRatingChange} />
+            <StarRating rating={review.rating} onRate={handleRatingChange} interactive={true} />
           </div>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">Your review *</label>
@@ -181,7 +210,7 @@ export default function ReviewSection({ product, API_URL }) {
         </form>
       )}
 
-      {reviews.length > 0 ? (
+      {!reviewsLoading && !reviewsError && reviews.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {reviews.map((r) => (
             <div
@@ -195,15 +224,17 @@ export default function ReviewSection({ product, API_URL }) {
                 </span>
               </div>
               <div className="flex items-center mb-2">
-                <StarRating rating={r.rating} onRate={() => {}} />
+                <StarRating rating={r.rating} onRate={() => {}} interactive={false} />
                 {r.verified && <span className="text-xs text-green-600 ml-1">Verified</span>}
               </div>
               <p className="text-sm text-gray-700 line-clamp-3">{r.comment}</p>
             </div>
           ))}
         </div>
-      ) : (
-        !reviewsLoading && <p className="text-gray-500 italic">No reviews yet. Be the first to write one!</p>
+      )}
+
+      {!reviewsLoading && !reviewsError && reviews.length === 0 && (
+        <p className="text-gray-500 italic">No reviews yet. Be the first to write one!</p>
       )}
     </div>
   );

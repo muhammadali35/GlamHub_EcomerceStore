@@ -22,11 +22,10 @@ export default function Shop() {
   const { category } = useParams();
   const currentCategory = category || "cosmetics";
 
-    const API_URL = import.meta.env.VITE_API_URL;
-
+  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
   // States
-  const [productsData,setProductsData]=useState([])
+  const [productsData, setProductsData] = useState([])
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [stockFilter, setStockFilter] = useState("all");
@@ -39,24 +38,24 @@ export default function Shop() {
   const [isStockOpen, setIsStockOpen] = useState(true);
 
 
-     async function getAllProducts () {
+  async function getAllProducts() {
 
-       let response= await fetch("http://localhost:5000/api/product",{
-        method:"GET"
-       })
-        let data= await response.json()
-        if (response.ok) {
-           setProductsData(data)
-        }
-     }
-    useEffect(()=>{
-       getAllProducts()
-    },[productsData])
+    let response = await fetch(`${API_BASE_URL}/api/product`, {
+      method: "GET"
+    })
+    let data = await response.json()
+    if (response.ok) {
+      setProductsData(data)
+    }
+  }
+  useEffect(() => {
+    getAllProducts()
+  }, [])
 
   // Get products
-let products = productsData.filter(
-  (p) => p.category === currentCategory
-);
+  let products = productsData.filter(
+    (p) => p.category === currentCategory
+  );
 
 
 
@@ -282,7 +281,7 @@ let products = productsData.filter(
                     .slice(0, hasActiveFilter ? undefined : visibleProducts)
                     .map((product) => (
                       <ProductCard
-                       key={product._id}
+                        key={product._id}
                         product={product}
                         currentCategory={currentCategory}
                       />
@@ -302,7 +301,7 @@ let products = productsData.filter(
                     className="px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 font-medium text-sm"
                   >
                     LOAD MORE
-                  </button> 
+                  </button>
                 </div>
               )}
             </>

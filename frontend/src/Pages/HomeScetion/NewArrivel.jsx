@@ -10,8 +10,11 @@ import ProductCard from "../../Components/Cards/ProductCard";
 // import { productsData } from "../../Components/DumyProducts";
 
 const NewArrivel = () => {
-   const [productsData,setProductsData]=useState([])
+  const [productsData, setProductsData] = useState([])
   const swiperRef = useRef(null);
+
+   const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 
   // Custom navigation handlers
   const handlePrev = () => {
@@ -26,32 +29,32 @@ const NewArrivel = () => {
   };
 
 
-          async function getNewProducts () {
-                let response= await fetch("http://localhost:5000/api/product",{
-                 method:"GET"
-                })
-                 let data= await response.json()
-                 if (response.ok) {
-                    setProductsData(data)
-                 }
-              }
-             useEffect(()=>{
-                getNewProducts()
-             },[productsData])
+  async function getNewProducts() {
+    let response = await fetch(`${API_BASE_URL}/api/product`, {
+      method: "GET"
+    })
+    let data = await response.json()
+    if (response.ok) {
+      setProductsData(data)
+    }
+  }
+  useEffect(() => {
+    getNewProducts()
+  }, [])
 
-  const newArrivalProducts = productsData.filter((item)=>item.newarrival)
-   
- 
+  const newArrivalProducts = productsData.filter((item) => item.newarrival)
+
+
   return (
     <section className="py-16 bg-white relative">
       <div className="container mx-auto px-6 md:px-10 lg:px-20">
-        {/* Heading */}
+          {/* Heading */}
         <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-mono text-black">
-            New <span className=" text-brand-gold"> Arrival</span> Products
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-mono text-black">
+            New <span className="text-brand-gold">Arrival</span> Products
           </h2>
-          <p className="mt-2 text-gray-600 text-sm md:text-base">
-            Discover the latest additions to our collection
+          <p className="mt-2 text-gray-600 text-sm md:text-base max-w-2xl mx-auto">
+            Fresh drops just for you — explore Pakistan’s most stylish new arrivals in beauty, tech & home.
           </p>
         </div>
 
@@ -100,8 +103,8 @@ const NewArrivel = () => {
             </>
           )}
 
-      </div>
         </div>
+      </div>
     </section>
   );
 };
