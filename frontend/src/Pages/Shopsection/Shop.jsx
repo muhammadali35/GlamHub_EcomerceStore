@@ -63,6 +63,7 @@ let products = productsData.filter(
   // Stock counts
   const inStockCount = products.filter((p) => p.inStock).length;
   const outOfStockCount = products.filter((p) => !p.inStock).length;
+  const AllStockCount = products.filter((p) => !p.Stock).length;
 
   // Check filters active
   const hasActiveFilter =
@@ -210,7 +211,7 @@ let products = productsData.filter(
                     onChange={() => setStockFilter("all")}
                     className="text-green-600 focus:ring-green-500"
                   />
-                  All ({productsData[currentCategory]?.length || 0})
+                  All ({AllStockCount})
                 </label>
                 <label className="flex items-center gap-2 text-sm cursor-pointer">
                   <input
@@ -301,7 +302,7 @@ let products = productsData.filter(
                     className="px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 font-medium text-sm"
                   >
                     LOAD MORE
-                  </button>
+                  </button> 
                 </div>
               )}
             </>

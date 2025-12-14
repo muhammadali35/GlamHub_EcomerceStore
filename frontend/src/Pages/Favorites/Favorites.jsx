@@ -35,7 +35,7 @@ const Favorites = () => {
               <div className="relative overflow-hidden bg-gray-100">
                 <Link to={`/product/${product.category}/${product._id}`}>
                   <img
-                    src={product.img}
+                    src={product.image}
                     alt={product.name}
                     className="w-full h-80 object-cover transform group-hover:scale-110 transition duration-500"
                   />
