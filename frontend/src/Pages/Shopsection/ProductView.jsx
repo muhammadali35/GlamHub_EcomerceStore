@@ -31,9 +31,6 @@ export default function ProductView() {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const swiperRef = useRef(null);
 
-  // 👇 New State for Cart Button Toggle
-  const [addedToCart, setAddedToCart] = useState(false);
-
   // ✅ FETCH PRODUCT + RELATED PRODUCTS
   useEffect(() => {
     const fetchProduct = async () => {
@@ -67,13 +64,45 @@ export default function ProductView() {
   }, [id, API_URL]);
 
   // ✅ LOADING STATE
-  if (loading) {
-    return (
-      <div className="container mx-auto px-6 py-20 text-center">
-        <div className="text-xl">Loading Product Details...</div>
+ if (loading) {
+  return (
+    <div className="container mx-auto px-6 py-12">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        {/* 🖼️ Skeleton Gallery */}
+        <div className="space-y-5">
+          {/* Main image placeholder */}
+          <div className="h-[500px] bg-gray-200 rounded-xl animate-pulse"></div>
+
+          {/* Thumbnails row */}
+          <div className="grid grid-cols-4 gap-3">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-28 bg-gray-200 rounded-md animate-pulse"></div>
+            ))}
+          </div>
+        </div>
+
+        {/* 🏷️ Skeleton Info */}
+        <div className="space-y-5">
+        
+          <div className="h-8 bg-gray-300 rounded w-3/4 animate-pulse"></div>
+          <div className="h-4 bg-gray-200 rounded w-full animate-pulse"></div>
+          <div className="h-4 bg-gray-200 rounded w-5/6 animate-pulse"></div>
+          <div className="h-4 bg-gray-200 rounded w-4/6 animate-pulse mt-2"></div>
+
+          <div className="h-10 bg-gray-300 rounded-md w-1/4 animate-pulse mt-4"></div>
+
+          <div className="flex space-x-3 mt-6">
+            <div className="flex-1 h-12 bg-gray-400 rounded-md animate-pulse"></div>
+            <div className="flex-1 h-12 bg-gray-500 rounded-md animate-pulse"></div>
+          </div>
+
+          <div className="h-8 bg-gray-200 rounded-full w-max px-4 animate-pulse"></div>
+          <div className="h-8 bg-gray-200 rounded-full w-max px-4 animate-pulse"></div>
+        </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
   // ✅ ERROR STATE
   if (error || !product) {
@@ -213,9 +242,6 @@ export default function ProductView() {
         {/* 🏷️ PRODUCT INFO */}
         <div className="flex flex-col space-y-5">
           <div>
-            <span className="text-xl text-gray-500 uppercase tracking-wide">
-              {product.categories?.join(", ")}
-            </span>
             <h1 className="text-3xl font-bold text-gray-800 mt-1">
               {product.name}
             </h1>
@@ -254,24 +280,12 @@ export default function ProductView() {
           <div className="flex space-x-3 mt-6">
             {product.inStock ? (
               <>
-                {addedToCart ? (
-                  <Link
-                    to="/cart"
-                    className="flex-1 bg-green-600 text-white px-7 md:px-6 md:py-3 rounded-md shadow hover:bg-black transition text-center"
-                  >
-                    VIEW CART
-                  </Link>
-                ) : (
-                  <button
-                    onClick={() => {
-                      addToCart(product, quantity);
-                      setAddedToCart(true);
-                    }}
-                    className="flex-1 whitespace-nowrap bg-brand-gold text-white px-7 md:px-6 md:py-3 rounded-md shadow hover:bg-black transition"
-                  >
-                    ADD TO CART
-                  </button>
-                )}
+                <button
+                  onClick={() => addToCart(product, quantity)}
+                  className="flex-1 whitespace-nowrap bg-brand-gold text-white px-7 md:px-6 md:py-3 rounded-md shadow hover:bg-black transition"
+                >
+                  ADD TO CART
+                </button>
 
                 <Link
                   onClick={() => addToCart(product, quantity)}
@@ -290,9 +304,8 @@ export default function ProductView() {
 
           <div className="mt-4 text-sm px-4 py-2 rounded-full w-max bg-gray-100">
             <span
-              className={`font-medium ${
-                product.inStock ? "text-green-600" : "text-red-600"
-              }`}
+              className={`font-medium ${product.inStock ? "text-green-600" : "text-red-600"
+                }`}
             >
               {stockStatus}
             </span>

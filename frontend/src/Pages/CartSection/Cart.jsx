@@ -23,7 +23,7 @@ const Cart = () => {
   }, [cart]);
 
   // ✅ Calculate totals
-  const SHIPPING_FEE = 150;
+  const SHIPPING_FEE = 220;
   const subtotal = cart.reduce(
     (acc, item) => acc + item.price * (quantities[item._id] || 1),
     0
@@ -199,7 +199,7 @@ const Cart = () => {
 
                 <Link to="/checkout">
                   <button className="w-full mt-8 bg-black hover:bg-gray-800 text-white py-4 rounded-full font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg">
-                    🚚 Proceed to Checkout
+                     Proceed to Checkout
                   </button>
                 </Link>
 

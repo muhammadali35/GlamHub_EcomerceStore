@@ -5,6 +5,10 @@ import { Dialog } from "@headlessui/react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
+import visa from "../../assets/visa.png";
+import mastercard from "../../assets/mastercard.png";
+import jazzcash from "../../assets/jazzcash.png";
+import easypaisa from "../../assets/easypaisa.png";
 
 const Checkout = () => {
   const {
@@ -20,9 +24,10 @@ const Checkout = () => {
 
   const navigate = useNavigate();
 
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+   const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
-  const SHIPPING_FEE = 150;
+
+  const SHIPPING_FEE = 220;
   const subtotal = cart.reduce(
     (acc, item) => acc + item.price * (quantities[item._id] || 1),
     0
@@ -80,6 +85,8 @@ const Checkout = () => {
     if (cityInputRef.current) cityInputRef.current.blur();
   };
 
+
+
   // ✅ Submit Order (Backend)
   const submitOrderToServer = async (paymentMethodSelected) => {
     try {
@@ -91,7 +98,7 @@ const Checkout = () => {
       fd.append("paymentMethod", paymentMethodSelected);
       fd.append("totalAmount", total);
 
-      const res = await fetch(`${API_URL}/api/orders`, {
+      const res = await fetch(`${API_BASE_URL}/api/orders`, {
         method: "POST",
         body: fd,
       });
@@ -180,7 +187,7 @@ const Checkout = () => {
             <h2 className="text-2xl font-bold text-gray-800 mb-8">Billing Details</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">First Name *</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">First Name </label>
                 <input
                   type="text"
                   name="firstName"
@@ -191,7 +198,7 @@ const Checkout = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Last Name *</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Last Name </label>
                 <input
                   type="text"
                   name="lastName"
@@ -203,7 +210,7 @@ const Checkout = () => {
               </div>
             </div>
             <div className="mt-6">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Email </label>
               <input
                 type="email"
                 name="email"
@@ -214,7 +221,7 @@ const Checkout = () => {
               />
             </div>
             <div className="mt-6">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Phone *</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Phone </label>
               <input
                 type="tel"
                 name="phone"
@@ -225,7 +232,7 @@ const Checkout = () => {
               />
             </div>
             <div className="mt-6">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">City *</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">City</label>
               <div className="relative">
                 <input
                   ref={cityInputRef}
@@ -257,7 +264,7 @@ const Checkout = () => {
               </div>
             </div>
             <div className="mt-6">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Street Address *</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Street Address </label>
               <textarea
                 name="address"
                 value={form.address}
@@ -401,10 +408,10 @@ const Checkout = () => {
                       Secure payment via JazzCash, EasyPaisa, Credit/Debit Cards.
                     </p>
                     <div className="flex flex-wrap gap-3">
-                      <img src="/visa.png" alt="Visa" className="h-8" />
-                      <img src="/mastercard.png" alt="MasterCard" className="h-8" />
-                      <img src="/jazzcash.png" alt="JazzCash" className="h-8" />
-                      <img src="/easypaisa.png" alt="Easypaisa" className="h-8" />
+                      <img src={visa} alt="Visa" className="h-8" />
+                      <img src={mastercard} alt="MasterCard" className="h-8" />
+                      <img src={jazzcash} alt="JazzCash" className="h-8" />
+                      <img src={easypaisa} alt="Easypaisa" className="h-8" />
                     </div>
                   </div>
                 )}
@@ -415,7 +422,7 @@ const Checkout = () => {
               onClick={handlePlaceOrder}
               className="w-full mt-8 bg-yellow-600 hover:bg-yellow-700 text-white py-4 rounded-xl font-bold text-lg transition transform hover:scale-[1.02] active:scale-[0.98] shadow"
             >
-              🚚 Place Order
+               Place Order
             </button>
           </div>
         </div>

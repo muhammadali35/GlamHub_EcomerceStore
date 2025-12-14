@@ -6,9 +6,8 @@ import { AiOutlineHeart, AiFillHeart } from "react-icons/ai"; // Heart icons
 export default function ProductCard({ product, currentCategory }) {
   const { addToCart, toggleFavorite, favorites } = useShop();
   const [isFav, setIsFav] = useState(false);
-  const [addedToCart, setAddedToCart] = useState(false); // ✅ new state
 
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+   const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
   // Check if product is already favorite (on mount and when favorites update)
   useEffect(() => {
@@ -16,28 +15,23 @@ export default function ProductCard({ product, currentCategory }) {
     setIsFav(favExist);
   }, [favorites, product._id]);
 
-  const handleAddToCart = () => {
-    addToCart(product);
-    setAddedToCart(true); // ✅ change button after adding
-  };
-
   return (
     <div className="bg-white rounded-2xl overflow-hidden group relative hover:shadow-2xl transition">
       {/* Image Section */}
       <div className="relative overflow-hidden bg-gray-100">
+
         <Link to={`/product/${currentCategory}/${product._id}`}>
           <img
             src={
               product.image?.startsWith("http")
                 ? product.image
-                : `${API_URL}/uploads/${product.image}`
+                : `${API_BASE_URL}/uploads/${product.image}`
             }
             alt={product.name}
             className="w-full h-80 object-cover transform group-hover:scale-110 transition duration-500"
           />
         </Link>
-
-        {/* Dark overlay on hover */}
+        {/* Dark overlay on hover (pointer-events-none so it won't block clicks) */}
         <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition duration-500 pointer-events-none"></div>
 
         {/* Favorite Icon */}
@@ -52,30 +46,21 @@ export default function ProductCard({ product, currentCategory }) {
           )}
         </button>
 
-        {/* View Button */}
+        {/* View Button (below favorite, visible only on hover) */}
         <Link to={`/product/${currentCategory}/${product._id}`}>
           <button className="absolute top-14 right-3 bg-white text-black p-2 rounded-full shadow opacity-0 group-hover:opacity-100 transition duration-500 hover:bg-black hover:text-white">
             👁
           </button>
         </Link>
 
-        {/* Add to Cart / View Cart */}
+        {/* Add to Cart or Out of Stock Message */}
         {product.inStock ? (
-          addedToCart ? (
-            <Link
-              to="/cart"
-              className="absolute bottom-[-60px] left-1/2 transform -translate-x-1/2 bg-green-600 text-white font-medium px-4 py-2 rounded-full w-40 shadow opacity-0 group-hover:bottom-5 group-hover:opacity-100 transition-all duration-500 hover:bg-white hover:text-green-600 text-center"
-            >
-              View Cart
-            </Link>
-          ) : (
-            <button
-              onClick={handleAddToCart}
-              className="absolute bottom-[-60px] left-1/2 transform -translate-x-1/2 bg-black text-white font-medium px-4 py-2 rounded-full w-40 shadow opacity-0 group-hover:bottom-5 group-hover:opacity-100 transition-all duration-500 hover:bg-white hover:text-black"
-            >
-              Add to Cart
-            </button>
-          )
+          <button
+            onClick={() => addToCart(product)}
+            className="absolute bottom-[-60px] left-1/2 transform -translate-x-1/2 bg-black text-white font-medium px-4 py-2 rounded-full w-40 shadow opacity-0 group-hover:bottom-5 group-hover:opacity-100 transition-all duration-500 hover:bg-white hover:text-black"
+          >
+            Add to Cart
+          </button>
         ) : (
           <div className="absolute bottom-[-60px] left-1/2 transform -translate-x-1/2 bg-red-500 text-white text-center font-medium px-4 py-2 rounded-full w-40 shadow opacity-0 group-hover:bottom-5 group-hover:opacity-100 transition-all duration-500">
             Out of Stock
@@ -88,9 +73,7 @@ export default function ProductCard({ product, currentCategory }) {
         <h3 className="text-lg font-semibold text-gray-800 group-hover:text-brand-gold transition">
           {product.name}
         </h3>
-        <p className="text-xl font-normal text-brand-gold mt-3">
-          Rs: {product.price}.00
-        </p>
+        <p className="text-xl font-normal text-brand-gold mt-3">Rs: {product.price}.00</p>
         <p className="text-gray-500 text-sm mt-1">Premium {product.name}</p>
       </div>
     </div>

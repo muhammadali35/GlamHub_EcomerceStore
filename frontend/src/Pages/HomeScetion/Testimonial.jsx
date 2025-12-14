@@ -62,13 +62,13 @@ const TestimonialSection = () => {
       <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-blue-100 rounded-full -z-10 blur-3xl opacity-30"></div>
 
       <div className="text-center mb-16 px-6">
-        <h2 className="text-3xl md:text-5xl font-extrabold text-gray-800 mb-5 tracking-tight">
-          What Our <span className="text-yellow-500">Customers Say</span>
-        </h2>
-        <p className="text-gray-600 max-w-3xl mx-auto text-base md:text-lg leading-relaxed">
-          Real stories from real people who’ve experienced the difference.
-        </p>
-      </div>
+  <h2 className="text-3xl md:text-5xl font-extrabold text-gray-800 mb-5 tracking-tight">
+    Loved by <span className="text-yellow-500"> Happy </span>Customers
+  </h2>
+  <p className="text-gray-600 max-w-3xl mx-auto text-base md:text-lg leading-relaxed">
+    Real reviews from real people — see why GlamHub is Pakistan’s favorite for beauty, tech & home essentials.
+  </p>
+</div>
 
       {/* Custom Navigation Arrows - Move to top right */}
       <div className="absolute  right-8 flex gap-4 z-20 ">
