@@ -1,5 +1,5 @@
 
-import {Product} from '../models/ProductModel.js'
+import { Product } from '../models/ProductModel.js'
 import asyncHandler from "express-async-handler";
 
 
@@ -10,7 +10,7 @@ export const createProduct = asyncHandler(async (req, res) => {
 
     const {
       name,
-      price,
+      price: priceStr,
       hotsale,
       newarrival,
       category,
@@ -19,6 +19,12 @@ export const createProduct = asyncHandler(async (req, res) => {
       categories,
       tags,
     } = req.body;
+
+    console.log("🔍 Raw req.body.price:", req.body.price, "| Type:", typeof req.body.price);
+    const price = parseFloat(priceStr);
+    console.log("✅ Parsed price:", price);
+
+
 
     if (!name || !price || !category || !description) {
       return res.status(400).json({ message: "Sab required fields bharo" });
@@ -43,10 +49,10 @@ export const createProduct = asyncHandler(async (req, res) => {
 
     try {
       parsedCategories = typeof categories === "string" ? JSON.parse(categories) : categories;
-    } catch {}
+    } catch { }
     try {
       parsedTags = typeof tags === "string" ? JSON.parse(tags) : tags;
-    } catch {}
+    } catch { }
 
     const product = await Product.create({
       name,
@@ -91,7 +97,7 @@ export const updateProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const {
     name,
-    price,
+    price: priceStr,       // rename to avoid confusion
     hotsale,
     newarrival,
     category,
@@ -100,6 +106,14 @@ export const updateProduct = asyncHandler(async (req, res) => {
     categories,
     tags,
   } = req.body;
+
+  let price;
+  if (priceStr !== undefined && priceStr !== "") {
+    price = parseFloat(priceStr);
+    if (isNaN(price) || price <= 0) {
+      return res.status(400).json({ message: "Price must be a valid number greater than 0" });
+    }
+  }
 
   const product = await Product.findById(id);
   if (!product) {
