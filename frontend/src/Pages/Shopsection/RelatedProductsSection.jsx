@@ -8,6 +8,7 @@ import ProductCard from "../../Components/Cards/ProductCard";
 
 export default function RelatedProductsSection({ sliceProducts, category }) {
   const relatedSwiperRef = useRef(null);
+  
 
   return (
     <div className="mt-20">
